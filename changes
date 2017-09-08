@@ -1,0 +1,41 @@
+2013-05-20: PETcofold v3.1.4 -> PETcofold v3.2
+ * PETcofold comes together with PETfold v2.0 as C version using
+   Vienna RNA Package library and Pfold library
+ * PET reliabilities are returned including gap-columns (parameter --ppfile) 
+ * parameter --setdelta replaces -setpetcon
+ * parameter --setgamma replaces -setpartprob
+ * rename "Normalized Score" to "Score" (like in PETfold)
+ * remove parameter -LP
+
+
+2013-05-20: PETcofold v3.1.3 -> PETcofold v3.1.4
+ * thermodynamic partial probability is calculated by sequence number
+   normalized delta G's (before non-normalized)
+ * calculate unpaired thermodynamic cofold-probabilities before
+   adjustment by partprob (switch functions get_prob_unpaired_seq and
+   multiply_partprob_paired; in older version unpaired thermodynamic
+   cofold-probabilities were adjusted twice by partprob)
+ * set RNA(co)fold option '--noLP' by default (same as in PETfold) and
+   replace parameter -noLP by -LP
+ * for RNAfold in function get_fasta_file, bases in gap-free sequences
+   are only constrained as base paired when pairing partner isn't a gap 
+ * solve stem extension bug where base pairs get constrained that
+   aren't connected with the constrained stem
+ * now also for SETSTRUC: merge intramolecular reliabilities for bases
+   with large intramolecular basepaired reliabilities and
+   intermolecular reliabilities for the other bases
+ * delta (petcon) is set back for the second alignment
+
+
+2013-05-20: PETfold v2.0pre -> PETfold v2.0
+ * reads PPfold calculated reliabilities from STDIN (parameter --ppfold)
+   to replace slow Pfold calculations for large alignments
+ * check for valid alignment as input (sequences of same length)
+ * PET reliabilities are returned including gap-columns (parameter --ppfile) 
+
+
+2011-11-07: PETcofold v3.1.2 -> PETcofold v3.1.3
+ * add parameter --setstruct for entire duplex structure which set
+   partial structure bp-reliabilies to step1 bp-reliabilities
+ * rename "Reliability" to "Normalized Score" (like in webserver)
+ * don't break identifiers at 1st dot (like in webserver)
