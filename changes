@@ -1,3 +1,11 @@
+2017-09-13: PETfold v2.0 -> PETfold v2.1; PETcofold v3.2 -> PETcofold v3.3
+ * Change Makefile such that ViennaRNA Package CFLAGS and LDFLAGS are retrieved
+   from pkg-config instead of hard coding them (thank you to Ronny L)
+ * Fix invalid access to phyl->root->child->brother after releasing memory of
+   phyl->root (thank you to Ronny L)
+ * Fix several compilation warnings
+
+
 2013-05-20: PETcofold v3.1.4 -> PETcofold v3.2
  * PETcofold comes together with PETfold v2.0 as C version using
    Vienna RNA Package library and Pfold library

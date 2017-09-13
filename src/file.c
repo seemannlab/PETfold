@@ -259,7 +259,7 @@ char *GetConnect(FILE *fp)
   return line;
 }
 
-int StrCmp(char *s, char *t)
+int StrCmp(const char *s, const char *t)
 {
   int i;
 
@@ -270,7 +270,7 @@ int StrCmp(char *s, char *t)
   return tolower(s[i])-tolower(t[i]);
 }
 
-int StrnCmp(char *s, char *t, int n)
+int StrnCmp(char *s, const char *t, int n)
 {
   int i;
 

@@ -714,7 +714,7 @@ char *substitute_char(char *string, char a, char b, int len)
  */
 void usage_petcofold()
 {
-	printf("PETcofold v3.2\n"
+	printf("PETcofold v3.3\n"
 	 "==============\n"
 	 "by Stefan E Seemann (seemann@rth.dk)\n"
 	 "Reference: Seemann, Richter et al. Algorithms Mol Biol. 5:22, 2010\n"

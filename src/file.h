@@ -33,7 +33,7 @@ void InitConnect(void);
 void PutConnect(char *s);
 char *GetConnect(FILE *fp);
 
-int StrCmp(char *s, char *t);
-int StrnCmp(char *s, char *t, int n);
+int StrCmp(const char *s, const char *t);
+int StrnCmp(char *s, const char *t, int n);
 
 #endif

@@ -40,7 +40,7 @@ static void freesuffix(SuffixTree *stree, SuffixNode *snode)
       freesuffix(stree, snode->child[i]);
 
   free(snode->child);
-  FreeMatrix(snode->elm);
+  //FreeMatrix(snode->elm);
   free(snode);
 }
 

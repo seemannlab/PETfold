@@ -1,4 +1,5 @@
 #include "file.h"
+#include <string.h>
 
 void usage(void);
 
@@ -289,8 +290,10 @@ int main(int argc, char **argv)
 	  else
 	    printf("%f %f %f setrgbcolor\n",
 		   1-prob2+0.8*prob, 1-0.5*prob2-0.3*prob, 1-0.2*prob);
-	  printf("%d -2 1 s\n", i, prob);
-	  printf("-2 %d 1 t\n", i, prob);
+	  //printf("%d -2 1 s\n", i, prob);
+	  //printf("-2 %d 1 t\n", i, prob);
+	  printf("%d -2 1 s\n", i);
+	  printf("-2 %d 1 t\n", i);
 	}
       }
       else {

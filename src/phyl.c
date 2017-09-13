@@ -403,7 +403,7 @@ void FixPhyl(Phyl *phyl)
       /* Move last child to root, and remove root */
       temp = phyl->root->child;
       free(phyl->root);
-      phyl->root = phyl->root->child->brother;
+      phyl->root = temp->brother;
       temp->uplen += phyl->root->uplen;
       temp->brother = phyl->root->child;
       phyl->root->child = temp;
@@ -418,7 +418,7 @@ void FixPhyl(Phyl *phyl)
       /* Move last child to root, and remove root */
       temp = phyl->root->child;
       free(phyl->root);
-      phyl->root = phyl->root->child->brother;
+      phyl->root = temp->brother;
       temp->uplen += phyl->root->uplen;
       temp->brother = phyl->root->child;
       phyl->root->child = temp;
