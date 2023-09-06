@@ -21,7 +21,8 @@
 
 int *get_prob_tree(Aln * align, double **paired_tree, double *single_tree, char *settree)
 {
-	PartStruc *dummy = calloc(1, sizeof(PartStruc));
+	PartStruc *dummy = malloc(1 * sizeof(PartStruc));
+	InitPartStruc(dummy);
 	int *struc = __get_pfold(align, paired_tree, single_tree, dummy, settree);
 	free(dummy);
 
@@ -41,7 +42,7 @@ int *__get_pfold(Aln *align_gf, double **paired_tree, double *single_tree, PartS
 	Entry *entry;
 	Align *align;
 	Dist *dist;
-	Phyl *phyl;
+	Phyl *tmpphyl, *phyl;
 	double *collikelhd;	/* Array of column probabilities to be created by the tree */
 	double oldnll, nll;
 	//char *file;
@@ -85,9 +86,10 @@ int *__get_pfold(Aln *align_gf, double **paired_tree, double *single_tree, PartS
 	    }
 
 	    /* copy Aln object in Entry object */
-	    entry_list = (Entry **)malloc((align_gf->nr+2)*sizeof(Entry *));
+	    //entry_list = (Entry **)malloc((align_gf->nr+2)*sizeof(Entry *));
+			entry_list = (Entry **)malloc((align_gf->nr+1)*sizeof(Entry *));
 	    Aln2EntryList(align_gf, entry_list);
-		//for (i = 0; entry_list[i] != NULL; i++) PrintEntry(stdout, entry_list[i]);
+		  //for (i = 0; entry_list[i] != NULL; i++) PrintEntry(stdout, entry_list[i]);
 
 	    /* read the sequences */
 	    align = Col2Align(entry_list, (int (*)(char, void *))FindSym,  (void *)grammar);
@@ -95,15 +97,19 @@ int *__get_pfold(Aln *align_gf, double **paired_tree, double *single_tree, PartS
 	    /* phylogenetical tree is not given and is estimated by neighbour joining approach
 		 * adapted from $Pfold:findphyl.c
 		 */
-		if( strlen(settree) == 0 )
+		if( ! strcmp("", settree) )
 		{
 		    /* find phylogeny of sequences
 		     * using the neighbour joining approach */
 		    dist = AlignDist(align, grammar);
-		    phyl = Neighbour(dist);
-		    FixPhyl(phyl);
-		    entry = PhylEntry(phyl, "tree");
+		    tmpphyl = Neighbour(dist);
+		    FixPhyl(tmpphyl);
+		    entry = PhylEntry(tmpphyl, "tree");
+				//PrintEntry(stdout, entry);
 		    phyl = ReadColPhyl(entry);
+
+				/* free memory */
+				//FreeDist(dist);
 		}
 		/* END adapted from Pfold:findphyl.c */
 		else
@@ -111,11 +117,14 @@ int *__get_pfold(Aln *align_gf, double **paired_tree, double *single_tree, PartS
 			char* tmptree = (char *)malloc((strlen(settree)+1) * sizeof(char));
 			strcpy(tmptree,settree);
 			strcat(tmptree, ":0");
-			phyl = ReadPhyl(tmptree, 1);
+			tmpphyl = ReadPhyl(tmptree, 1);
 			free(tmptree);
-		    entry = PhylEntry(phyl, "tree");
-		    phyl = ReadColPhyl(entry);
+		  entry = PhylEntry(tmpphyl, "tree");
+		  phyl = ReadColPhyl(entry);
 		}
+		/* free memory */
+		//FreePhyl(tmpphyl);
+
 		if (verbose_flag)
 		{
 			printf("PFOLD:\n NJ tree = ");
@@ -125,7 +134,7 @@ int *__get_pfold(Aln *align_gf, double **paired_tree, double *single_tree, PartS
 		/* branch lengths are not given and are estimated by maximum likelihood
 		 * adapted from Pfold:mltree.c
 		 */;
-		if( settree == NULL || strlen(settree) == 0 || strstr(settree, ":") == NULL )
+		if( settree == NULL || ! strcmp("", settree) || strstr(settree, ":") == NULL )
 		{
 			initphyl(phyl->root, grammar, align);
 			collikelhd = (double *)calloc(align->len, sizeof(double));
@@ -149,7 +158,7 @@ int *__get_pfold(Aln *align_gf, double **paired_tree, double *single_tree, PartS
 
 			/* store tree in Newick format if not given */
 			//Phyl2Char(&settree, phyl);
-			Phyl2Char(settree, phyl);
+			//Phyl2Char(settree, phyl);
 		}
 		/* END adapted from Pfold:mltree.c */
 
@@ -189,29 +198,29 @@ int *__get_pfold(Aln *align_gf, double **paired_tree, double *single_tree, PartS
 	    alignstr->str = (int *)malloc(align_gf->len * sizeof(int));
 
 	    if( partstruc->ss_nr == 0 && partstruc->bp_nr == 0 ) {
-			align_bp_col = ReadColno(entry_list[0], "align_bp");
-			alignpos_col = ReadColno(entry_list[0], "alignpos");
-			seq_bp_col = ReadColno(entry_list[0], "seq_bp");
-			seqpos_col = ReadColno(entry_list[0], "seqpos");
-			if (align_bp_col == 0 && seq_bp_col == 0)
-			  for (i = 0; i < align_gf->len; i++)
-				  alignstr->str[i] = -1;
-			else
-			  for (i = 0; i < align_gf->len; i++) {
-				  if (align_bp_col != 0)
-					  GetField(field, entry_list[0], i+1, align_bp_col);
-				  else
-					  GetField(field, entry_list[0], i+1, seq_bp_col);
-				  if (StrCmp(field, "s") == 0)
-					  alignstr->str[i] = SINGLE;
-				  else
-					  if (StrCmp(field, "d") == 0)
-						  alignstr->str[i] = DOUBLE;
-					  else {
-						  alignstr->str[i] = FindPair(entry_list[0], i+1,
-							  align_bp_col, alignpos_col,
-							  seq_bp_col, seqpos_col)-1;
-					  }
+				align_bp_col = ReadColno(entry_list[0], "align_bp");
+				alignpos_col = ReadColno(entry_list[0], "alignpos");
+				seq_bp_col = ReadColno(entry_list[0], "seq_bp");
+				seqpos_col = ReadColno(entry_list[0], "seqpos");
+				if (align_bp_col == 0 && seq_bp_col == 0)
+			  	for (i = 0; i < align_gf->len; i++)
+				  	alignstr->str[i] = -1;
+				else
+			  	for (i = 0; i < align_gf->len; i++) {
+				  	if (align_bp_col != 0)
+					  	GetField(field, entry_list[0], i+1, align_bp_col);
+				  	else
+					  	GetField(field, entry_list[0], i+1, seq_bp_col);
+				  	if (StrCmp(field, "s") == 0)
+					  	alignstr->str[i] = SINGLE;
+				  	else
+					  	if (StrCmp(field, "d") == 0)
+						 		alignstr->str[i] = DOUBLE;
+					  	else {
+						 		alignstr->str[i] = FindPair(entry_list[0], i+1,
+						  	align_bp_col, alignpos_col,
+						  	seq_bp_col, seqpos_col)-1;
+					  	}
 				  }
 	    }
 	    else {
@@ -274,16 +283,19 @@ int *__get_pfold(Aln *align_gf, double **paired_tree, double *single_tree, PartS
 		}
 
 		/* free memory */
-		for( i=0; i<align_gf->nr+1; i++ )
-			free(entry_list[i]);
+		for( i=0; i<align_gf->nr; i++ )
+			FreeEntry(entry_list[i]);
+		free(entry_list[i]);
 		free(entry_list);
 
-	    struc = (int *)malloc(align_gf->len * sizeof(int));
+	  struc = (int *)malloc(align_gf->len * sizeof(int));
 		memcpy(struc, alignstr->str, align_gf->len * sizeof(int));
 
 		free(alignstr->map);
 		free(alignstr->str);
 		free(alignstr);
+
+		FreeAlign(align);
 	}
 	/* evolutionary model is switched off */
 	else
@@ -301,6 +313,8 @@ int *__get_pfold(Aln *align_gf, double **paired_tree, double *single_tree, PartS
 
 	/* free dynamic memory */
 	//FreePhyl(phyl);
+	FreePpCyk(ppcyk);
+	FreePairprob(pp);
 
 	return struc;
 }

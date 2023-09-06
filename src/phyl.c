@@ -50,6 +50,8 @@ void FreePhyl(Phyl *phyl)
 /* Free a node */
 static void FreeNode(PhylNode *pnode, void *arg)
 {
+  //fprintf(stderr, "%i\t%6.4f\t%s\n", pnode->number, pnode->uplen, (char *) pnode->elm);
+  //free(pnode->elm);
   free(pnode);
 }
 
@@ -112,12 +114,14 @@ Phyl *__RPrec(char *newick, double mul)
 
   phyl = MakePhyl();
 
-  if (isalpha(newick[ptr])) {     /* we have a leaf */
+  //if (isalpha(newick[ptr])) {     /* we have a leaf */
+  if (isalpha(newick[ptr]) || (ptr>0 && isdigit(newick[ptr]) && newick[ptr-1] != ':')) {     /* we have a leaf */
+  //if (ptr>0 && newick[ptr] != '(' && newick[ptr] != ',' && newick[ptr] != ')' && newick[ptr] != ';' && newick[ptr] != ':' && newick[ptr-1] != ":") {  /* we have a leak */
     /* Read name */
     for (len = 0; newick[ptr+len] != ':' && newick[ptr+len] != ',' &&
 	          newick[ptr+len] != ')' && newick[ptr+len] != ';'; len++)
       ;
-    phyl->root->elm = (void *)malloc(len+1 * sizeof(char)); 
+    phyl->root->elm = (void *)malloc(len+1 * sizeof(char));
     strncpy((char *)phyl->root->elm, newick+ptr, len);
     ((char *)phyl->root->elm)[len] = '\0';
     ptr += len;
@@ -156,7 +160,7 @@ Phyl *__RPrec(char *newick, double mul)
     fprintf(stderr, "phyl: Expected ':', ',', ')' or ';' in position %d\n", ptr);
     exit(1);
   }
-    
+
   return phyl;
 }
 
@@ -188,6 +192,9 @@ Phyl *ReadColPhyl(Entry *entry)
     return NULL;
 
   RCPrec(entry, phyl->root, atoi(field), colno);
+
+  /* free memory */
+  free(colno);
 
   return phyl;
 }
@@ -258,6 +265,9 @@ Entry *PhylEntry(Phyl *phyl, char *name)
 
   PCPrec(entry, phyl->root, 1, colno);
 
+  /* free memory */
+  free(colno);
+
   return entry;
 }
 
@@ -321,6 +331,9 @@ void UpdatePhylEntry(Phyl *phyl, Entry *entry)
   sprintf(s, "%d", phyl->root->number);
 
   ChgEntryText(entry, "root", s);
+
+  /* free memory */
+  free(colno);
 }
 
 /* Recursive function used by PhylEntry */
@@ -512,7 +525,9 @@ void __CPrec(PhylNode *pnode, PhylNode *newnode)
 {
   PhylNode *child, *newchild;
 
-  newnode->elm = pnode->elm; 
+  newnode->elm = pnode->elm;
+  //printf("%s", (char *) pnode->elm);
+  //strcpy(newnode->elm, pnode->elm);
   newnode->uplen = pnode->uplen;
   if (pnode->brother == NULL)
     newnode->brother = NULL;
@@ -546,8 +561,11 @@ void __POrec(PhylNode *pnode, void (*f)(PhylNode *, void *), void *arg)
 {
   PhylNode *child;
 
-  for (child = pnode->child; child != NULL; child = child->brother)
+  for (child = pnode->child; child != NULL; child = child->brother) {
+    //if( child->brother != NULL )
+    //  printf("pnode: %i %6.2f %i %i %i\n", child->number, child->uplen, (child->brother)->number, (child->child)->number, (child->parent)->number);
     __POrec(child, f, arg);
+  }
 
   f(pnode, arg);
 }
@@ -696,8 +714,11 @@ void FreeDist(Dist *dist)
 {
   int i;
 
-  for (i = 0; i < dist->numleaf; i++)
+  for (i = 0; i < dist->numleaf; i++) {
     free(dist->matrix[i]);
+    //printf("Name: %s %i\n", dist->name[i], i);
+    //free(dist->name[i]);
+  }
 
   free(dist->matrix);
   free(dist->name);
@@ -804,7 +825,7 @@ static void distcalc(PhylNode *pnode, void *arg)
   int i, j, k;
 
   name = ((DM_arg *)arg)->dist->name;
-  matrix = ((DM_arg *)arg)->dist->matrix;  
+  matrix = ((DM_arg *)arg)->dist->matrix;
 
   if (pnode->child == NULL)  /* leaf */
     name[((DM_arg *)arg)->num] = pnode->elm; /* set name */
@@ -874,7 +895,7 @@ Phyl *UPGMA(Dist *original)
 
   for (;;) {
     min = -1;
-        
+
     for (i = 0; i < num; i++)
       for (j = 0; j < num; j++)
 	if (dist->matrix[i][j] != -1)
@@ -882,7 +903,7 @@ Phyl *UPGMA(Dist *original)
 	    min = dist->matrix[i][j];
 	    min_i = i;
 	    min_j = j;
-	  }    
+	  }
 
     if (min == -1)
       break;
@@ -947,7 +968,7 @@ Phyl **UPGMAlimit(Dist *original, double limit)
 
   for (;;) {
     min = -1;
-        
+
     for (i = 0; i < num; i++)
       for (j = 0; j < num; j++)
 	if (dist->matrix[i][j] != -1)
@@ -955,7 +976,7 @@ Phyl **UPGMAlimit(Dist *original, double limit)
 	    min = dist->matrix[i][j];
 	    min_i = i;
 	    min_j = j;
-	  }    
+	  }
 
     if (min == -1)
       break;
@@ -992,7 +1013,7 @@ Phyl **UPGMAlimit(Dist *original, double limit)
       phyl[j++] = phyl[i];
 
   phyl = (Phyl **)realloc(phyl, (j+1)*sizeof(Phyl *));
-  
+
   phyl[j] = NULL;
 
   return phyl;
@@ -1020,7 +1041,7 @@ Phyl *Neighbour(Dist *original)
   num = dist->numleaf;
 
   avg = (double *)malloc(num * sizeof(double));
-  
+
   for (i = 0; i < num; i++)
     dist->matrix[i][i] = -1;
 
@@ -1058,7 +1079,7 @@ Phyl *Neighbour(Dist *original)
     /* Find minimum */
 
     found = 0;
-        
+
     for (i = 0; i < num; i++)
       for (j = 0; j < num; j++)
 	if (dist->matrix[i][j] != -1)
@@ -1099,6 +1120,16 @@ Phyl *Neighbour(Dist *original)
     }
   }
 
+  /* free memory */
+  free(avg);
+  /*for (i = 0; i < num; i++) {
+    if (i!=min_i && i!=min_j) {
+      FreePhyl(phyl[i]);
+    }
+  }*/
+  FreeDist(dist);
+  FreeDist(dist_NJ);
+
   return temp;  /* the last phylogeny to be made */
 }
 
@@ -1114,7 +1145,7 @@ char **PhylLeaves(Phyl *phyl)
   PL_arg *pl_arg;
 
   pl_arg = (PL_arg *)malloc(sizeof(PL_arg));
-  
+
   pl_arg->num = 0;
   pl_arg->leaf = (char **)malloc((CountLeaf(phyl->root)+1)*sizeof(char *));
 
@@ -1301,6 +1332,7 @@ double Distance(Grammar *grammar, int *seq1, int *seq2, int len)
   LListCounter *lcount = MakeCounter(grammar->sgrp, FIRST);
 
   sgrp = Next(lcount);
+  free(lcount);
 
   size = sgrp->freq->cols;
 
@@ -1339,7 +1371,7 @@ double Distance(Grammar *grammar, int *seq1, int *seq2, int len)
 
   while (Minimize(&logdist, &f) == 0) {
     if (logdist > 10) break;
-    pmatrix = 
+    pmatrix =
       TransposeMatrix(temp = ExpMatrix(exp(logdist), sgrp->eigen,
 				sgrp->diag, sgrp->inveigen));
 
@@ -1374,6 +1406,7 @@ double InitFastDist(Grammar *grammar)
   LListCounter *lcount = MakeCounter(grammar->sgrp, FIRST);
 
   sgrp = Next(lcount);
+  free(lcount);
 
   fdd = (FDdata *)malloc(sizeof(FDdata));
 
@@ -1382,7 +1415,7 @@ double InitFastDist(Grammar *grammar)
   fdd->pmatrix = (Matrix **)malloc(MAXINT * sizeof(Matrix *));
 
   for (i = 0; i < MAXINT; i ++) {
-    fdd->pmatrix[i] = 
+    fdd->pmatrix[i] =
       TransposeMatrix(temp = ExpMatrix(Int2Dbl(i), sgrp->eigen,
 				       sgrp->diag, sgrp->inveigen));
     FreeMatrix(temp);
@@ -1451,7 +1484,7 @@ double FastDist(Grammar *grammar, int *seq1, int *seq2, int len)
   if (startk < 0) startk = 0;
   endk = mink+stp;
   if (endk > MAXINT) endk = MAXINT;
-  
+
   stp = 3;
 
   for (k = startk; k < endk; k += stp) {
@@ -1472,7 +1505,7 @@ double FastDist(Grammar *grammar, int *seq1, int *seq2, int len)
   if (startk < 0) startk = 0;
   endk = mink+stp;
   if (endk > MAXINT) endk = MAXINT;
-  
+
   stp = 1;
 
   for (k = startk; k < endk; k += stp) {
@@ -1507,4 +1540,3 @@ static double Minx(double y0, double y1, double y2)
 
   return (y0-y2)/(2*y0-4*y1+2*y2);
 }
-

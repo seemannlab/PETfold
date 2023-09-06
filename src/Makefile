@@ -12,7 +12,7 @@ $(BINPATH)/PETfold:	petfold.c file.o llist.o col.o grammar.o edouble.o matrix.o 
 			gcc -O3 -g3 ${VRNA_CFLAGS} -o $(BINPATH)/PETfold petfold.c petfoldlibs.c thermodynamic.c evolutionary.c file.o llist.o col.o grammar.o edouble.o matrix.o align.o phyl.o optimize.o inout.o newcolprob.o search.o ${VRNA_LIBS} -lm -fopenmp
 
 $(BINPATH)/PETcofold: 	petcofold.c petfoldlibs.o thermodynamic.o evolutionary.o file.o llist.o col.o grammar.o edouble.o matrix.o align.o phyl.o optimize.o inout.o newcolprob.o search.o
-			gcc -O3 -g3 ${VRNA_CFLAGS} -o $(BINPATH)/PETcofold petcofold.c petcofoldlibs.c petfoldlibs.o thermodynamic.o evolutionary.o file.o llist.o col.o grammar.o edouble.o matrix.o align.o phyl.o optimize.o inout.o newcolprob.o search.o ${VRNA_LIBS} -lm -fopenmp 
+			gcc -O3 -g3 ${VRNA_CFLAGS} -o $(BINPATH)/PETcofold petcofold.c petcofoldlibs.c petfoldlibs.o thermodynamic.o evolutionary.o file.o llist.o col.o grammar.o edouble.o matrix.o align.o phyl.o optimize.o inout.o newcolprob.o search.o ${VRNA_LIBS} -lm -fopenmp
 
 $(BINPATH)/drawphyl:	drawphyl.c file.o llist.o phyl.o grammar.o optimize.o col.o align.o matrix.o edouble.o
 			gcc -O3 -g3 -o $(BINPATH)/drawphyl drawphyl.c file.o llist.o phyl.o grammar.o optimize.o col.o align.o matrix.o edouble.o -lm
@@ -46,7 +46,7 @@ grammar.o:	grammar.c grammar.h
 
 inout.o:	inout.c inout.h
 		gcc -O3 -g3 -c inout.c
-		 
+
 llist.o: 	llist.c llist.h
 		gcc -O3 -g3 -c llist.c
 
@@ -67,3 +67,6 @@ search.o:	search.c search.h
 
 clean:
 		rm -f *.o $(BINPATH)/PETfold $(BINPATH)/PETcofold $(BINPATH)/drawdot $(BINPATH)/drawphyl
+
+run:
+		export PETFOLDBIN=$(BINPATH); $(BINPATH)/PETfold -f ../example/example.fasta

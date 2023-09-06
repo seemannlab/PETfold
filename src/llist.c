@@ -52,11 +52,16 @@ void DestroyLList(LList *llist)
   LListNode *lnode;
 
   /* free LListNodes */
-  while ((lnode = llist->first->next) != NULL) {
+  /*while ((lnode = llist->first->next) != NULL) {
+    (llist->first)->next = lnode->next;
+    free(lnode);
+  }*/
+  while ((lnode = llist->first->next) != llist->last) {
     (llist->first)->next = lnode->next;
     free(lnode);
   }
   free(llist->first);
+  free(llist->last);
 
   /* free LList */
   free(llist);

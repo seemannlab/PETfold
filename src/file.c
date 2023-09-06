@@ -34,7 +34,7 @@
 /* stack for reading and putting connected lines */
 LList *_Con_stack = NULL;
 
-/* 
+/*
    This function reads a line from fp. The line can have any length
    and a pointer to it is returned. NULL is returned on error or EOF.
 */
@@ -52,7 +52,15 @@ char *GetLine(FILE *fp)
   while ((c = fgetc(fp)) != EOF) {
     if (ptr == maxlen) {
       maxlen *= 2;
-      s = (char *)realloc(s, maxlen * sizeof(char));  /* Get more space */
+
+      unsigned char *tmp = (char *)realloc(s, maxlen * sizeof(char));  /* Get more space */
+      if(tmp == NULL)
+      {
+        /* Handle exception; maybe throw something */
+        fprintf(stderr, "Can't allocate enough memory for input file.");
+        free(tmp);
+      } else
+        s = tmp;
     }
     s[ptr++] = c;
     if (c == '\n')
@@ -64,14 +72,21 @@ char *GetLine(FILE *fp)
 	  return NULL;
   }
 
-  s = (char *)realloc(s, (ptr+1) * sizeof(char));
+  unsigned char *tmp = (char *)realloc(s, (ptr+1) * sizeof(char));
                                       /* Remove excess (in most cases) */
+  if (tmp == NULL)
+  {
+    fprintf(stderr, "Can't allocate enough memory for input file.");
+    free(tmp);
+  } else
+    s = tmp;
+
   s[ptr] = '\0';   /* End of string */
 
   return s;
 }
 
-/* 
+/*
    This function reads a whole file from fp. The file can have any
    length and a pointer to it is returned. NULL is returned on error.
 */
@@ -131,7 +146,7 @@ CmdArg *InitArgument(int argc, char **argv)
   cmdarg->file_ptr = i;
 
   return cmdarg;
-}  
+}
 
 /*
    This function returns a pointer to the next command line
@@ -171,7 +186,7 @@ char *GetArgument(CmdArg *cmdarg)
   maxlen = 20;                  /* current maximum length of argument */
 
   argument = (char *)malloc(maxlen * sizeof(char));
-  
+
   pos = 0;
 
   do {
@@ -283,4 +298,3 @@ int StrnCmp(char *s, const char *t, int n)
 
   return tolower(s[i])-tolower(t[i]);
 }
-

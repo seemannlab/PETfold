@@ -165,7 +165,7 @@ void MoveColprob(Colprob *colprob, Alignstr *alignstr, int pos)
   Dgrp *dgrp;
   int wl = colprob->wlen;
   int w;   /* string length itererator */
-  
+
   while ((sgrp = Next(lcount)) != NULL)
     colprob->sgl[lcount->pos][pos % wl]
       = ScolProb(alignstr, lcount->pos, pos);
@@ -275,7 +275,7 @@ void MoveFColprob(FColprob *colprob, Alignstr *alignstr, int pos)
   Dgrp *dgrp;
   int wl = colprob->wlen;
   int w;   /* string length itererator */
-  
+
   while ((sgrp = Next(lcount)) != NULL)
     colprob->sgl[lcount->pos][pos % wl]
       = FScolProb(alignstr, lcount->pos, pos);
@@ -370,6 +370,9 @@ void InitCol(Phyl *phyl, Grammar *grammar, int wlen,
 
     FreeMatrix(((DNodeInfo *)(dphyl[i]->root->elm))->qmatrix);
     ((DNodeInfo *)dphyl[i]->root->elm)->qmatrix = equilibrium;
+
+    /* free memory of dphyl */
+    //FreePhyl(dphyl[i]);
   }
 
   free(ida);
@@ -449,7 +452,7 @@ static void initsphyl(PhylNode *pnode, void *isa)
   /* set sequence numbers */
   if (Child(pnode) == NULL) { /* Leaf */
     pn_info->noseqs = 1;
-    pn_info->seqs = (int *)malloc(1 * sizeof(int));      
+    pn_info->seqs = (int *)malloc(1 * sizeof(int));
     pn_info->seqs[0] = SeqNumber(alignstr->align, name);
     if (pn_info->seqs[0] == -1) {
       fprintf(stderr, "Sequence not found: '%s'\n", name);
@@ -478,7 +481,7 @@ static void initsphyl(PhylNode *pnode, void *isa)
   pn_info->col = (int *)malloc((pn_info->noseqs+1) * sizeof(int));
 
   /* Set matrix for up branch */
-  pn_info->qmatrix = 
+  pn_info->qmatrix =
     TransposeMatrix(ExpMatrix(pnode->uplen, sgrp->eigen,
 	      sgrp->diag, sgrp->inveigen));
 
@@ -518,7 +521,7 @@ static void initdphyl(PhylNode *pnode, void *ida)
   /* set sequence numbers */
   if (Child(pnode) == NULL) { /* Leaf */
     pn_info->noseqs = 1;
-    pn_info->seqs = (int *)malloc(1 * sizeof(int));      
+    pn_info->seqs = (int *)malloc(1 * sizeof(int));
     pn_info->seqs[0] = SeqNumber(alignstr->align, name);
     if (pn_info->seqs[0] == -1) {
       fprintf(stderr, "Sequence not found: '%s'\n", name);
@@ -547,7 +550,7 @@ static void initdphyl(PhylNode *pnode, void *ida)
   pn_info->col = (int *)malloc((2*pn_info->noseqs+1) * sizeof(int));
 
   /* Set matrix for up branch */
-  pn_info->qmatrix = 
+  pn_info->qmatrix =
     TransposeMatrix(ExpMatrix(pnode->uplen, dgrp->eigen,
 	      dgrp->diag, dgrp->inveigen));
 
@@ -709,7 +712,7 @@ void scolrec(PhylNode *pnode, Alignstr *alignstr, int pos)
   /* The calculation has not been done before */
 
   /* Do calculations for children */
-  for (child = Child(pnode); child != NULL; child = Brother(child))  
+  for (child = Child(pnode); child != NULL; child = Brother(child))
     scolrec(child, alignstr, pos);
 
   nucvector = pn_info->nucvector;
@@ -815,7 +818,7 @@ void dcolrec(PhylNode *pnode, Alignstr *alignstr, int pos1, int dist)
   /* The calculation has not been done before */
 
   /* Do calculations for children */
-  for (child = Child(pnode); child != NULL; child = Brother(child))  
+  for (child = Child(pnode); child != NULL; child = Brother(child))
     dcolrec(child, alignstr, pos1, dist);
 
   nucvector = pn_info->nucvector;
@@ -855,7 +858,7 @@ void dcolrec(PhylNode *pnode, Alignstr *alignstr, int pos1, int dist)
     if (SNode->elm != NULL) {
       temp = pn_info->col[noseqs];
       pn_info->col[noseqs] = -1;
-      
+
       SNode = SuffixSearch(pn_info->singletree, pn_info->col);
 
       pn_info->col[noseqs] = temp;

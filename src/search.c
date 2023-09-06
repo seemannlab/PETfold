@@ -20,7 +20,7 @@ SuffixTree *InitSuffixSearch(int alphabet_size)
 
   for (i = 0; i < stree->alphabet_size; i++)
     stree->root->child[i] = NULL;
-  
+
   return stree;
 }
 
@@ -40,7 +40,7 @@ static void freesuffix(SuffixTree *stree, SuffixNode *snode)
       freesuffix(stree, snode->child[i]);
 
   free(snode->child);
-  //FreeMatrix(snode->elm);
+  free(snode->elm);
   free(snode);
 }
 

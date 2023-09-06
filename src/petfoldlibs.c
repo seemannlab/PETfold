@@ -54,14 +54,18 @@ Aln *get_alignment(char *fasta)
 			align->identifier[ptr-1] = (char *)malloc((strlen(s)+1) * sizeof(char));
 
 			strcpy(align->identifier[ptr-1],s+1);
+			//strcpy(align->identifier[ptr-1],"n");
+			//strcat(align->identifier[ptr-1],s+1);
 
 			/* replace spaces in sequence identifiers by underscore */
+			unsigned char *tmp = s;
 			s = strchr(align->identifier[ptr-1],' ');
 			while( s != NULL )
 			{
 				*s = '_';
 				s = strchr(align->identifier[ptr-1],' ');
 			}
+			s = tmp;
 
 			seqlen = 0;
 		}
@@ -100,10 +104,17 @@ Aln *get_alignment(char *fasta)
 char *read_file(char *file) {
 	char *s;
 	FILE *fp;
+
+
 	if( (fp = fopen(file,"rb")) != NULL )
 	{
-		s = GetLine(fp);
-		chomp(s);  // replace newline by string terminator
+		if( (s = GetLine(fp)) != NULL )
+		{
+			chomp(s);  // replace newline by string terminator
+		}
+		else {
+			s = file;
+		}
 	}
 	else {
 		s = file;
@@ -630,13 +641,15 @@ int *partstruc2list(PartStruc *evocon, int len)
 	for (i=0; i<len; i++)
 		consstr[i] = INFINITE_I;
 
-	for (i=0; i<evocon->ss_nr; i++)
-		consstr[evocon->ss[i]] = -1;
+	if (setevo_flag) {
+		for (i=0; i<evocon->ss_nr; i++)
+			consstr[evocon->ss[i]] = -1;
 
-	for (i=0; i<evocon->bp_nr; i++)
-	{
-		consstr[evocon->bp_left[i]] = i;
-		consstr[evocon->bp_right[i]] = i;
+		for (i=0; i<evocon->bp_nr; i++)
+		{
+			consstr[evocon->bp_left[i]] = i;
+			consstr[evocon->bp_right[i]] = i;
+		}
 	}
 
 	return consstr;
@@ -657,13 +670,15 @@ int *partstruc2str(PartStruc *evocon, int len) {
 	for (i=0; i<len; i++)
 		consstr[i] = INFINITE_I;
 
-	for (i=0; i<evocon->ss_nr; i++)
-		consstr[evocon->ss[i]] = -1;
+	if (setevo_flag) {
+		for (i=0; i<evocon->ss_nr; i++)
+			consstr[evocon->ss[i]] = -1;
 
-	for (i=0; i<evocon->bp_nr; i++)
-	{
-		consstr[evocon->bp_left[i]] = evocon->bp_right[i];
-		consstr[evocon->bp_right[i]] = evocon->bp_left[i];
+		for (i=0; i<evocon->bp_nr; i++)
+		{
+			consstr[evocon->bp_left[i]] = evocon->bp_right[i];
+			consstr[evocon->bp_right[i]] = evocon->bp_left[i];
+		}
 	}
 
 	return consstr;
@@ -679,19 +694,21 @@ char *partstruc2string(PartStruc *evocon, int len)
 	int i;
 
 	/* Initialization */
-	dotb = (char *)malloc(len+1 * sizeof(char));
+	dotb = (char *)calloc(len+1, sizeof(char));
 	for (i=0; i<len; i++)
 		dotb[i] = '.';
 	dotb[i] = '\0';
 
-	for (i=0; i<evocon->bp_nr; i++)
-	{
-		dotb[evocon->bp_left[i]] = '(';
-		dotb[evocon->bp_right[i]] = ')';
-	}
+  if (setevo_flag) {
+  	for (i=0; i<evocon->bp_nr; i++)
+		{
+			dotb[evocon->bp_left[i]] = '(';
+			dotb[evocon->bp_right[i]] = ')';
+		}
 
-	for (i=0; i<evocon->ss_nr; i++)
-		dotb[evocon->ss[i]] = 'x';
+		for (i=0; i<evocon->ss_nr; i++)
+			dotb[evocon->ss[i]] = 'x';
+	}
 
 	return dotb;
 }
@@ -782,8 +799,11 @@ double backtracking(DynEntry ***T, int len, char *struc)
 
 	/* Initialization */
 	rid = (int *)malloc(3*len * sizeof(int));
-	depth = (int *)malloc(len/5 * sizeof(int));
-	//depth = (int *)malloc(len * sizeof(int));
+	int tmp_len = 2;
+	if (len/5 > tmp_len) {
+		tmp_len = len/5;
+	}
+	depth = (int *)malloc(tmp_len * sizeof(int));
 	//c1 = (DynEntry *)malloc(len * sizeof(DynEntry));
 	//c2 = (DynEntry *)malloc(len * sizeof(DynEntry));
 	c1 = (DynEntry **)calloc(2*len, sizeof(DynEntry *));
@@ -1076,6 +1096,28 @@ int create_ppfile(double **paired, double *single, int *gap_col, int len, int ga
 	}
 
 	return 0;
+}
+
+
+/*
+ * ensemble diveristy
+ */
+double ensemble_diversity(double **paired, int len)
+{
+	int i, j, c=0;
+
+	double ensdiv = .0;
+	for( i=0; i<len; i++ )
+	{
+		for( j=i+4; j<len; j++ )
+		{
+			ensdiv += paired[i][j] * (1 - paired[i][j]);
+			c++;
+		}
+	}
+
+	//fprintf(stderr, "len = %i\tc = %i\n", len, c);
+	return ensdiv/c;
 }
 
 
@@ -1546,6 +1588,14 @@ void FreeSeqList(SeqList *seqlist)
 	free(seqlist);
 }
 
+/*
+ * Initialize structure tagPartStruc
+ */
+ void InitPartStruc(PartStruc *evocon)
+ {
+	 evocon->ss_nr = 0;
+	 evocon->bp_nr = 0;
+ }
 
 /*
  * Free Memory of structure PartStruc
@@ -1639,7 +1689,7 @@ void usage()
 	 "export PETFOLDBIN=<PATH>\n"
 	 "\n"
 	 "Parse sampling of suboptimal structures:\n"
-         "PETfold -f <file> -o 10000 | grep Subopt | sort -k 4 -ur | awk '{print $3,$4}' | less\n\n"					      
+         "PETfold -f <file> -o 10000 | grep Subopt | sort -k 4 -ur | awk '{print $3,$4}' | less\n\n"
 	);
 
 	exit(1);

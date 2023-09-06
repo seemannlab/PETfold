@@ -136,6 +136,7 @@ void MoveFCyk(FCyk *e, FColprob *fcolprob, int pos);
 int *FCykStr(FCyk *cyk);
 
 PpCyk *MakePpCyk(int wlen);
+void FreePpCyk(PpCyk *cyk);
 void InitPpCyk(PpCyk *e, Pairprob *pairprob);
 int *PpCykStr(PpCyk *cyk);
 void PrintPpCyk(FILE *fp, PpCyk *e);

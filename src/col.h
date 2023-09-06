@@ -33,6 +33,7 @@ typedef struct tagEntry {
   char *endline;       /* For '; **********' line */
 } Entry;
 
+void FreeEntry(Entry *entry);
 typedef struct tagColfile {
   Header *header;
   Entry **entry;
@@ -46,6 +47,7 @@ void PrintHeader(FILE *fp, Header *header);
 
 Entry *MakeEntry(void);
 Entry *NewEntry(char *type, char *name, int len);
+void FreeEntry(Entry *entry);
 void CopyEntry(Entry *dest, Entry *source);
 int ReadEntry(FILE *fp, Entry *entry);
 void PrintEntry(FILE *fp, Entry *entry);

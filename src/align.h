@@ -21,6 +21,7 @@ typedef struct tagSeqlist {
 Align *MakeAlign(int numseq);
 Align *ReadAlign(FILE *fp, int (*f)(char, void *), void *arg);
 Align *Col2Align(Entry **entry_list, int (*f)(char, void *), void *arg);
+void FreeAlign(Align *align);
 int SeqNumber(Align *align, char *name);
 void PrintAlign(FILE *fp, Align* align);
 

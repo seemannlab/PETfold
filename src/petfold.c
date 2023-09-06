@@ -52,6 +52,7 @@ int main(int argc, char **argv) {
 	double ***P;
 	int cmd, i;
 	double score;
+	double ensdiv;
 
 	/* parsing long options */
 	while (1)
@@ -145,7 +146,14 @@ int main(int argc, char **argv) {
 
 	if (verbose_flag)
 		printf("INPUT:\n number sequences = %i\n sequence length = %i\n",
-				align->nr, align->len);
+			align->nr, align->len);
+
+	if (align->nr < 3) {
+		printf("WARNING: PETfold is cancelled as your input consists of ONLY %i sequence(s).\n" ,
+			align->nr);
+		printf("Please provide an alignment of at least 3 sequences.\n");
+		exit(1);
+	}
 
 	/* remove gap columns from alignment */
 	gap_col = (int *) malloc((align->len) * sizeof(int));
@@ -169,11 +177,19 @@ int main(int argc, char **argv) {
 	single_tree = (double *) malloc((align_gf->len) * sizeof(double));
 
 	/* open tree file in Newick format */
-	char *tree = (char *) malloc(BUFFERSIZE * sizeof(char *));
+	//char *tree = (char *) malloc(BUFFERSIZE * sizeof(char));
+	char *tree = "";
 	if (strlen(settree)) {
-		settree = read_file(settree);
-		strcpy(tree, settree);
+		tree = read_file(settree);
+		//strcpy(tree, settree);
+		//tree = strdup(tmp);
+		//free(tmp);
+		//tree = (char *) realloc(tree, strlen(tree) + 1 * sizeof(char));
 	}
+//	else {
+//		tree = (char *) malloc(BUFFERSIZE * sizeof(char));
+//		*tree = '\n';
+//	}
 
 	/* open structure file in dot-bracket format */
 	if (strlen(setstruc))
@@ -190,9 +206,6 @@ int main(int argc, char **argv) {
 	//for (i=0; i<align_gf->len; i++) printf("%11.9f ", single_tree[i]); printf("\n");
 	//int j; for (i=1; i<=align_gf->len; i++) { for (j=1; j<=align_gf->len; j++) printf("%2d %2d %16.8e\n", i,j,paired_tree[i-1][j-1]); }
 	//int j; for (i=1; i<=align_gf->len; i++) { for (j=i+1; j<=align_gf->len; j++) printf("%16.8e  ", paired_tree[i-1][j-1]); };
-
-	if (strlen(settree))
-		tree = (char *) realloc(tree, strlen(tree) * sizeof(char *));
 
 	if (setevo_flag) {
 		/* write Pfold predicted RNA secondary structure in an string */
@@ -237,6 +250,7 @@ int main(int argc, char **argv) {
 	/* backtracking to find the consensus MEA structure */
 	pet_db_gf = (char *) calloc(align_gf->len + 1, sizeof(char));
 	score = backtracking(T, align_gf->len, pet_db_gf);
+	ensdiv = ensemble_diversity(paired_pet, align_gf->len);
 
 	/* include gap columns */
 	//pet_db = include_gap_columns(pet_db_gf, gap_col, align_gf->len, align->len-align_gf->len);
@@ -270,6 +284,7 @@ int main(int argc, char **argv) {
 		if (strlen(pet_db))
 			printf("PETfold RNA structure:\t%s\n", pet_db);
 		printf("Score_{model,structure}{tree,alignment} = %7.6f\n", score);
+		printf("Length-normalized ensemble diversity = %7.6f\n", ensdiv);
 	}
 
 	/* structure sampling to find suboptimal structures */
@@ -302,14 +317,16 @@ int main(int argc, char **argv) {
 		free(P);
 	}
 
-	free(tree);
+	//free(tree);
 	free(pet_db_gf);
 	free(pet_db);
 
 	free(gap_col);
 	free(pfold_struc);
 
-	FreePartStruc(evocon);
+	if (setevo_flag)
+		FreePartStruc(evocon);
+
 	free(evocon_db);
 
 	FreeDynEntry(T, align_gf->len);

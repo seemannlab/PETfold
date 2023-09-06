@@ -121,6 +121,26 @@ Align *Col2Align(Entry **entry_list, int (*f)(char, void *), void *arg)
   return align;
 }
 
+/*
+ * Free Memory of structure Align
+ */
+void FreeAlign(Align *align)
+{
+	int i, nr;
+
+	nr = align->numseq;
+
+	for( i=0; i<nr; i++ )
+		free(align->name[i]);
+	free(align->name);
+
+	for( i=0; i<nr; i++ )
+		free(align->seq[i]);
+	free(align->seq);
+
+	free(align);
+}
+
 int SeqNumber(Align *align, char *name)
 {
   int i;
@@ -138,7 +158,7 @@ int SeqNumber(Align *align, char *name)
 void PrintAlign(FILE *fp, Align* align)
 {
   int i, j;
-  
+
   for (j = 0; j < align->numseq; j++) {
     fprintf(fp, "%-20s ", align->name[j]);
     for(i = 0; i < align->len; i++)
@@ -209,4 +229,3 @@ Seqlist *Col2Seqlist(Entry **entry_list, int (*f)(char, void *), void *arg)
 
   return seqlist;
 }
-

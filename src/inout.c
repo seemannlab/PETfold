@@ -112,7 +112,7 @@ void InitInside(Inside *e, Colprob *colprob)
 	      ProdEdouble(rulsn->prob,
 	      ProdEdouble(colprob->sgl[rulsn->rsg][p],
 			 e->prob[rulsn->rnt][p+1][w-1])));
-	
+
     InitCounter(lcount, e->grammar->rulns, FIRST);  /* N -> Ns rules */
     while((rulns = Next(lcount)) != NULL)
       for (p = 0; w + p < wl; p++)
@@ -120,7 +120,7 @@ void InitInside(Inside *e, Colprob *colprob)
 	      ProdEdouble(rulns->prob,
               ProdEdouble(colprob->sgl[rulns->rsg][p+w],
 			 e->prob[rulns->rnt][p][w-1])));
-	
+
     if (w >= 2) {  /* minimum stringlength of 3 */
       InitCounter(lcount, e->grammar->ruldnd, FIRST);  /* N -> dNd rules */
       while((ruldnd = Next(lcount)) != NULL)
@@ -172,7 +172,7 @@ void InitInside(Inside *e, Colprob *colprob)
 
   free(lcount);
 }
-      
+
 /*------------------------------------------------------------------*/
 
 /* This moves the inside variables according to the probabilities in
@@ -272,7 +272,7 @@ void MoveInside(Inside *e, Colprob *colprob, int pos)
 
   free(lcount);
 }
-      
+
 /*------------------------------------------------------------------*/
 
 /* Allocates memory for Outside variables for a window of length
@@ -350,7 +350,7 @@ void InitOutside(Inside *e, Outside *f, Colprob *colprob)
 	      ProdEdouble(rulsn->prob,
 	      ProdEdouble(colprob->sgl[rulsn->rsg][p-1],
 		      f->prob[rulsn->lnt][p-1][w+1])));
-	
+
     InitCounter(lcount, f->grammar->rulns, FIRST);  /* N -> Ns rules */
     while((rulns = Next(lcount)) != NULL)
       for (p = 0; w + p+1 < wl; p++)
@@ -358,7 +358,7 @@ void InitOutside(Inside *e, Outside *f, Colprob *colprob)
 	      ProdEdouble(rulns->prob,
 	      ProdEdouble(colprob->sgl[rulns->rsg][p+w+1],
 		      f->prob[rulns->lnt][p][w+1])));
-	
+
     InitCounter(lcount, f->grammar->ruldnd, FIRST);  /* N -> dNd rules */
     while((ruldnd = Next(lcount)) != NULL)
       for (p = 1; w + p+1 < wl; p++) {
@@ -394,7 +394,7 @@ void InitOutside(Inside *e, Outside *f, Colprob *colprob)
 
   free(lcount);
 }
-      
+
 /*------------------------------------------------------------------*/
 
 Pairprob *MakePairprob(int wlen)
@@ -504,7 +504,7 @@ Edouble InitPairprob(Pairprob *pp, Inside *e, Outside *f, Colprob *colprob)
     DivEdouble(&pp->sgl[p], totprob);
 
   free(lcount);
-  
+
   return totprob;
 }
 
@@ -567,7 +567,7 @@ void PrintPairprob(FILE *fp, Pairprob *pp, Pairprob *pp2, Alignstr *alignstr, Ed
 
   for (p = 0; p < wl; p++) {
     fprintf(fp," %10.9f", Edbl2Dbl(pp->sgl[p]));
-    
+
     if (p == wl-1)
       for (k = 0; k < map[p+1]-map[p]; k++)
 	fprintf(fp," 0.000000");
@@ -576,7 +576,7 @@ void PrintPairprob(FILE *fp, Pairprob *pp, Pairprob *pp2, Alignstr *alignstr, Ed
 	fprintf(fp," 0.000000");
   }
   fprintf(fp, "\n");
-  
+
   /* Pr[sigma,A] */
   fprintf(fp, "\n %10.9f\n", Edbl2Dbl(LogEdouble(totprob)));
 }
@@ -789,7 +789,7 @@ Cyk *MakeCyk(Grammar *grammar, int wlen)
       for (i = 0; i < wlen; i++)
 	cyk->trace[j][i] = (Trace *)malloc( (wlen - i) * sizeof(Trace));
     }
-  
+
   cyk->structure = (int *)malloc(wlen * sizeof(int));
 
   return cyk;
@@ -868,7 +868,7 @@ void InitCyk(Cyk *e, Colprob *colprob)
 	  e->trace[rulsn->lnt][p][w].type = 2;
 	  e->trace[rulsn->lnt][p][w].rule = (Rulsn *) rulsn;
 	}
-	
+
     InitCounter(lcount, e->grammar->rulns, FIRST);  /* N -> Ns rules */
     while((rulns = Next(lcount)) != NULL)
       for (p = 0; w + p < wl; p++)
@@ -879,7 +879,7 @@ void InitCyk(Cyk *e, Colprob *colprob)
 	  e->trace[rulns->lnt][p][w].type = 3;
 	  e->trace[rulns->lnt][p][w].rule = (Rulns *) rulns;
 	}
-	
+
     if (w >= 2) {  /* minimum stringlength of 3 */
       InitCounter(lcount, e->grammar->ruldnd, FIRST);  /* N -> dNd rules */
       while((ruldnd = Next(lcount)) != NULL)
@@ -1003,8 +1003,11 @@ void InitCyk(Cyk *e, Colprob *colprob)
     if (stp == 1)
       break;
   }
+
+  /* free memory */
+  DestroyLList(stack);
 }
-      
+
 /*------------------------------------------------------------------*/
 
 /* This initializes the cyk variables according to the
@@ -1073,7 +1076,7 @@ void MoveCyk(Cyk *e, Colprob *colprob, int pos)
 	  e->trace[rulsn->lnt][(pos-w)%(wl-w)][w].type = 2;
 	  e->trace[rulsn->lnt][(pos-w)%(wl-w)][w].rule = (Rulsn *) rulsn;
 	}
-	
+
     InitCounter(lcount, e->grammar->rulns, FIRST);  /* N -> Ns rules */
     while((rulns = Next(lcount)) != NULL)
       if (MaxEdouble(&e->prob[rulns->lnt][(pos-w)%(wl-w)][w],
@@ -1084,7 +1087,7 @@ void MoveCyk(Cyk *e, Colprob *colprob, int pos)
 	  e->trace[rulns->lnt][(pos-w)%(wl-w)][w].type = 3;
 	  e->trace[rulns->lnt][(pos-w)%(wl-w)][w].rule = (Rulns *) rulns;
       }
-	
+
     if (w >= 2) {  /* minimum stringlength of 3 */
       InitCounter(lcount, e->grammar->ruldnd, FIRST);  /* N -> dNd rules */
       while((ruldnd = Next(lcount)) != NULL)
@@ -1207,7 +1210,7 @@ void MoveCyk(Cyk *e, Colprob *colprob, int pos)
       break;
   }
 }
-      
+
 /*------------------------------------------------------------------*/
 
 void ModifyCyk(Cyk *e, Pairprob *pp)
@@ -1215,7 +1218,7 @@ void ModifyCyk(Cyk *e, Pairprob *pp)
   int i, j;
   int maxj;
   double max;
-  
+
   for (i = 0; i < e->wlen; i++) {
     max = 0;
     maxj = -1;
@@ -1234,7 +1237,7 @@ void ModifyCyk(Cyk *e, Pairprob *pp)
     else
       e->structure[i] = maxj;
   }
-  
+
   for (i = 0; i < e->wlen; i++)
     if (e->structure[i] != -1 &&
 	e->structure[e->structure[i]] != i)
@@ -1373,7 +1376,7 @@ FCyk *MakeFCyk(Grammar *grammar, int wlen)
       for (i = 0; i < wlen; i++)
 	cyk->trace[j][i] = (Trace *)malloc( (wlen - i) * sizeof(Trace));
     }
-  
+
   cyk->structure = (int *)malloc(wlen * sizeof(int));
 
   return cyk;
@@ -1451,7 +1454,7 @@ void InitFCyk(FCyk *e, FColprob *fcolprob)
 	  e->trace[rulsn->lnt][p][w].type = 2;
 	  e->trace[rulsn->lnt][p][w].rule = (Rulsn *) rulsn;
 	}
-	
+
     InitCounter(lcount, e->grammar->rulns, FIRST);  /* N -> Ns rules */
     while((rulns = Next(lcount)) != NULL)
       for (p = 0; w + p < wl; p++)
@@ -1462,7 +1465,7 @@ void InitFCyk(FCyk *e, FColprob *fcolprob)
 	  e->trace[rulns->lnt][p][w].type = 3;
 	  e->trace[rulns->lnt][p][w].rule = (Rulns *) rulns;
 	}
-	
+
     if (w >= 2) {  /* minimum stringlength of 3 */
       InitCounter(lcount, e->grammar->ruldnd, FIRST);  /* N -> dNd rules */
       while((ruldnd = Next(lcount)) != NULL)
@@ -1562,7 +1565,7 @@ void InitFCyk(FCyk *e, FColprob *fcolprob)
       break;
   }
 }
-      
+
 /*------------------------------------------------------------------*/
 
 /* This initializes the cyk variables according to the
@@ -1630,7 +1633,7 @@ void MoveFCyk(FCyk *e, FColprob *fcolprob, int pos)
 	  e->trace[rulsn->lnt][(pos-w)%(wl-w)][w].type = 2;
 	  e->trace[rulsn->lnt][(pos-w)%(wl-w)][w].rule = (Rulsn *) rulsn;
 	}
-	
+
     InitCounter(lcount, e->grammar->rulns, FIRST);  /* N -> Ns rules */
     while((rulns = Next(lcount)) != NULL)
       if (MaxFdouble(&e->prob[rulns->lnt][(pos-w)%(wl-w)][w],
@@ -1641,7 +1644,7 @@ void MoveFCyk(FCyk *e, FColprob *fcolprob, int pos)
 	  e->trace[rulns->lnt][(pos-w)%(wl-w)][w].type = 3;
 	  e->trace[rulns->lnt][(pos-w)%(wl-w)][w].rule = (Rulns *) rulns;
       }
-	
+
     if (w >= 2) {  /* minimum stringlength of 3 */
       InitCounter(lcount, e->grammar->ruldnd, FIRST);  /* N -> dNd rules */
       while((ruldnd = Next(lcount)) != NULL)
@@ -1739,7 +1742,7 @@ void MoveFCyk(FCyk *e, FColprob *fcolprob, int pos)
       break;
   }
 }
-      
+
 /*------------------------------------------------------------------*/
 
 void PrintFCyk(FILE *fp, FCyk *e)
@@ -1785,10 +1788,28 @@ PpCyk *MakePpCyk(int wlen)
   cyk->trace = (Trace **)malloc(wlen * sizeof(Trace *));
   for (i = 0; i < wlen; i++)
     cyk->trace[i] = (Trace *)malloc( (wlen - i) * sizeof(Trace));
-  
+
   cyk->structure = (int *)malloc(wlen * sizeof(int));
 
   return cyk;
+}
+
+/*------------------------------------------------------------------*/
+
+void FreePpCyk(PpCyk *cyk)
+{
+  int i;
+  int wlen;
+
+  wlen = cyk->wlen;
+
+  for (i = 0; i < wlen; i++) {
+    free(cyk->prob[i]);
+    free(cyk->trace[i]);
+  }
+
+  //free(cyk->structure);
+  free(cyk);
 }
 
 /*------------------------------------------------------------------*/
@@ -1815,7 +1836,7 @@ void InitPpCyk(PpCyk *e, Pairprob *pp)
   for (p = 0; p < wl; p++)
      for (w = 0; w + p < wl; w++)
       e->prob[p][w] = Dbl2Edbl(0.);
-  
+
   /* stringlength 0 initialization */
 
   for (p = 0; p < wl; p++) {
@@ -1837,7 +1858,7 @@ void InitPpCyk(PpCyk *e, Pairprob *pp)
 		     SumEdouble(pp->sgl[p+w],
 				e->prob[p][w-1])))
 	e->trace[p][w].type = 3;
-	
+
     if (w >= 2) {  /* minimum stringlength of 3 */
       for (p = 0; w + p < wl; p++) {
 	if (MaxEdouble(&e->prob[p][w],
@@ -2032,7 +2053,7 @@ void InitPaircnt(Inside *e, Paircnt *paircnt, Colprob *colprob)
 		ProdEdouble(rulsn->prob,
 		ProdEdouble(colprob->sgl[rulsn->rsg][p],
 			e->prob[rulsn->rnt][p+1][w-1]))));
-	
+
     InitCounter(lcount, e->grammar->rulns, FIRST);  /* N -> Ns rules */
     while((rulns = Next(lcount)) != NULL)
       for (p = 0; w + p < wl; p++)
@@ -2041,7 +2062,7 @@ void InitPaircnt(Inside *e, Paircnt *paircnt, Colprob *colprob)
 		ProdEdouble(rulns->prob,
 		ProdEdouble(colprob->sgl[rulns->rsg][p+w],
 			e->prob[rulns->rnt][p][w-1]))));
-	
+
     if (w >= 2) {  /* minimum stringlength of 3 */
     InitCounter(lcount, e->grammar->ruldnd, FIRST);  /* N -> dNd rules */
     while((ruldnd = Next(lcount)) != NULL)
@@ -2090,7 +2111,7 @@ void InitPaircnt(Inside *e, Paircnt *paircnt, Colprob *colprob)
 
   free(lcount);
 }
-      
+
 /*------------------------------------------------------------------*/
 
 /* This moves the inside variables according to the probabilities in
@@ -2179,11 +2200,10 @@ void MovePaircnt(Inside *e, Paircnt *paircnt, Colprob *colprob, int pos)
       if (!IsZeroEdouble(paircnt->cnt[n][(pos-w)%(wl-w)][w]))
 	DivEdouble(&paircnt->cnt[n][(pos-w)%(wl-w)][w],
 		   e->prob[n][(pos-w)%(wl-w)][w]);
-    
+
   }
 
   free(lcount);
 }
-      
-/*------------------------------------------------------------------*/
 
+/*------------------------------------------------------------------*/

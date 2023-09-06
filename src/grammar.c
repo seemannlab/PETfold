@@ -169,7 +169,7 @@ Iprt *MakeIprt(Grammar *grammar)
 
   return iprt;
 }
-  
+
 Sgrp *MakeSgrp(Grammar *grammar)
 {
   Sgrp *sgrp;
@@ -185,7 +185,7 @@ Sgrp *MakeSgrp(Grammar *grammar)
 
   return sgrp;
 }
-  
+
 Dgrp *MakeDgrp(Grammar *grammar)
 {
   Dgrp *dgrp;
@@ -201,7 +201,7 @@ Dgrp *MakeDgrp(Grammar *grammar)
 
   return dgrp;
 }
-  
+
 
 int readiprt(FILE *fp, Grammar *grammar)
 {
@@ -345,13 +345,13 @@ int readsgrp(FILE *fp, Grammar *grammar)
     if (s[ptr] != '\0') {
       fprintf(stderr, "Too many frequencies in reading single group\n");
       return 1; }
-    
+
     /* Eigenvector matrix */
-    
+
     if ((s = GetConnect(fp)) == NULL) {
       fprintf(stderr, "Error in reading single group eigen matrix\n");
       return 1; }
-  
+
     ptr = 0;
 
     for (j = 0; j < numterm; j++)
@@ -363,7 +363,7 @@ int readsgrp(FILE *fp, Grammar *grammar)
 
 	ptr += len;
       }
-    
+
     while (isspace(s[ptr]))
       ptr++;
 
@@ -388,7 +388,7 @@ int readsgrp(FILE *fp, Grammar *grammar)
 
 	ptr += len;
       }
-    
+
     while (isspace(s[ptr]))
       ptr++;
 
@@ -505,13 +505,13 @@ int readdgrp(FILE *fp, Grammar *grammar)
     if (s[ptr] != '\0') {
       fprintf(stderr, "Too many frequencies in reading double group\n");
       return 1; }
-    
+
     /* Eigenvector matrix */
-    
+
     if ((s = GetConnect(fp)) == NULL) {
       fprintf(stderr, "Error in reading double group eigen matrix\n");
       return 1; }
-  
+
     ptr = 0;
 
     for (j = 0; j < numterm2; j++)
@@ -523,7 +523,7 @@ int readdgrp(FILE *fp, Grammar *grammar)
 
 	ptr += len;
       }
-    
+
     while (isspace(s[ptr]))
       ptr++;
 
@@ -548,7 +548,7 @@ int readdgrp(FILE *fp, Grammar *grammar)
 
 	ptr += len;
       }
-    
+
     while (isspace(s[ptr]))
       ptr++;
 
@@ -800,7 +800,7 @@ void PrintGrammar(FILE *fp, Grammar *grammar)
   while ((term = Next(termcnt)) != NULL)
     fprintf(fp, " %c", term->sym);
   fprintf(fp, "\n\n");
-  
+
   fprintf(fp, "> Interpret:\n");
   iprtcnt = MakeCounter(grammar->iprt, FIRST);
   while ((iprt = Next(iprtcnt)) != NULL) {
@@ -810,7 +810,7 @@ void PrintGrammar(FILE *fp, Grammar *grammar)
     fprintf(fp, "\n");
   }
   fprintf(fp, "\n");
-  
+
   fprintf(fp, "> Translate:\n");
   trnscnt = MakeCounter(grammar->trns, FIRST);
   while ((trns = Next(trnscnt)) != NULL) {
@@ -819,7 +819,7 @@ void PrintGrammar(FILE *fp, Grammar *grammar)
     fprintf(fp, "\n");
   }
   fprintf(fp, "\n");
-  
+
   fprintf(fp, "> Single group:\n");
   sgrpcnt = MakeCounter(grammar->sgrp, FIRST);
   while ((sgrp = Next(sgrpcnt)) != NULL) {
@@ -863,7 +863,7 @@ void PrintGrammar(FILE *fp, Grammar *grammar)
     FreeMatrix(temp);
     */
   }
-  
+
   fprintf(fp, "> Double group:\n");
   dgrpcnt = MakeCounter(grammar->dgrp, FIRST);
   while ((dgrp = Next(dgrpcnt)) != NULL) {
@@ -958,12 +958,12 @@ void RobustGrammar(Grammar *grammar, double robust)
 {
   int i, j;
   int numterm;
-  
+
   numterm = grammar->term->count;
 
   for (i = 0; i < numterm+grammar->iprt->count; i++)
     for (j = 0; j < numterm; j++)
-      if (Edbl2Dbl(grammar->quickdist[i][j]) < robust) 
+      if (Edbl2Dbl(grammar->quickdist[i][j]) < robust)
 	grammar->quickdist[i][j] = Dbl2Edbl(robust);
 }
 
@@ -1106,6 +1106,8 @@ char Translate(char sym, LList *trns)
 
   if (num != -1)
     sym = elm->newsym;
+
+  free(lcount);
 
   return sym;
 }

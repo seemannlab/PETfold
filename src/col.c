@@ -33,13 +33,13 @@
 Header *MakeHeader()
 {
   Header *header;
-  
+
   header = (Header *)malloc(sizeof(Header));
   header->text = NULL;
 
   return header;
 }
-/* 
+/*
    Reads database header from file point fp. Returns 0 on ok, 1
    otherwise.
 */
@@ -143,11 +143,11 @@ void AddHeaderInfo(Header *header, int argc, char **argv)
 int ReadType(Entry *entry, const char *type)
 {
   char value[MAXCOLW];
-  
+
   if (ReadText(entry, "TYPE", MAXCOLW, value) == 0 &&
       StrCmp(type, value) == 0)
     return 1;
-  
+
   return 0;
 }
 
@@ -220,7 +220,7 @@ int ReadCollabel(Entry *entry, int colno, char *label)
       if (value == colno) {
 	strcpy(label, s);
 	return 0; }
-      
+
   return 1;
 }
 
@@ -241,7 +241,7 @@ int ChgCollabel(Entry *entry, int colno, const char *label)
 	sprintf(s, "; COL %-3d           %s\n", value, label);
 	entry->text[ptr] = s;
 	return 0; }
-      
+
   return 1;
 }
 
@@ -252,7 +252,7 @@ int ReadVar(Entry *entry, const char *keyword, char *value)
 {
   int ptr;      /* For the text line number */
   char s[MAXCOLW];
-  
+
   for (ptr = 0; ptr < entry->textlen; ptr++)
     if (sscanf(entry->text[ptr], "; %s %s", s, value) == 2 &&
 	StrCmp(s, keyword) == 0)
@@ -269,7 +269,7 @@ int ReadText(Entry *entry, const char *keyword, int maxlen, char *value)
   int ptr;      /* For the text line number */
   int pos;
   int i;
-  
+
   for (ptr = 0; ptr < entry->textlen; ptr++)
     if (sscanf(entry->text[ptr], "; %n", &pos) == 0 &&
 	StrnCmp(&entry->text[ptr][pos], keyword, strlen(keyword)) == 0) {
@@ -294,7 +294,7 @@ int ChgEntryText(Entry *entry, const char *keyword, char *newtext)
   int pos;
   int i;
   char *temp;
-  
+
   for (ptr = 0; ptr < entry->textlen; ptr++)
     if (sscanf(entry->text[ptr], "; %n", &pos) == 0 &&
 	StrnCmp(&entry->text[ptr][pos], keyword, strlen(keyword)) == 0) {
@@ -304,7 +304,7 @@ int ChgEntryText(Entry *entry, const char *keyword, char *newtext)
       temp = (char *)malloc((pos+strlen(newtext)+2)*sizeof(char));
       strncpy(temp, entry->text[ptr], pos);
       for (i = 0; newtext[i] != '\0'; i++)
-	temp[pos+i] = newtext[i]; 
+	temp[pos+i] = newtext[i];
       temp[pos+i] = '\n';
       temp[pos+i+1] = '\0';
       free(entry->text[ptr]);
@@ -324,7 +324,7 @@ int RmvColno(Entry *entry, const char *keyword)
   int ptr;      /* For the text line number */
   int value, i;
   char s[MAXCOLW];
-  
+
   for (ptr = 0; ptr < entry->textlen; ptr++)
     if (sscanf(entry->text[ptr], "; COL %d %s", &value, s) == 2 &&
 	StrCmp(s, keyword) == 0) {
@@ -339,7 +339,7 @@ int RmvColno(Entry *entry, const char *keyword)
 
   /* Change other column numbers */
   for (ptr = 0; ptr < entry->textlen; ptr++)
-    if (sscanf(entry->text[ptr], "; COL %d %s", &i, s) == 2 &&	
+    if (sscanf(entry->text[ptr], "; COL %d %s", &i, s) == 2 &&
 	i > value)
       sprintf(entry->text[ptr], "; COL %-5d         %s\n", i-1, s);
 
@@ -376,10 +376,10 @@ Entry *NewEntry(char *type, char *name, int len)
 
   entry->text[0] = (char *)malloc((22+strlen(type)) * sizeof(char *));
   sprintf(entry->text[0], "; TYPE              %s\n", type);
-  
+
   entry->text[1] = (char *)malloc((22+strlen(name)) * sizeof(char *));
   sprintf(entry->text[1], "; ENTRY             %s\n", name);
-  
+
   entry->text[2] = (char *)malloc(14 * sizeof(char *));
   sprintf(entry->text[2], "; ----------\n");
 
@@ -395,6 +395,23 @@ Entry *NewEntry(char *type, char *name, int len)
   strcpy(entry->endline, "; **********\n");
 
   return entry;
+}
+
+/*
+  Free Entry Memory
+*/
+void FreeEntry(Entry *entry)
+{
+  int i;
+
+  for (i = 0; i < entry->textlen; i++)
+    free(entry->text[i]);
+  free(entry->text);
+  for (i = 0; i < entry->len; i++)
+    free(entry->line[i]);
+  free(entry->line);
+  free(entry->endline);
+  free(entry);
 }
 
 /*
@@ -429,7 +446,7 @@ void CopyEntry(Entry *dest, Entry *source)
     strcpy(dest->line[ptr], source->line[ptr]);
   }
   dest->len = source->len;
-  
+
   dest->endline = (char *)malloc((strlen(source->endline)+1) * sizeof(char));
   strcpy(dest->endline, source->endline);
 }
@@ -445,7 +462,7 @@ int ReadEntry(FILE *fp, Entry *entry)
   int maxlen;      /* Dynamic line allocation maximum */
 
   /* Read entry text */
-  
+
   if (entry->text != NULL) {  /* Free old space */
     for (ptr = 0; ptr < entry->textlen; ptr++)
       free(entry->text[ptr]);
@@ -539,7 +556,7 @@ void AddEntryText(Entry *entry, const char *format, ...)
   strcpy(entry->text[entry->textlen-2], s);
 }
 
-/* 
+/*
    Adds text after '; TYPE' and '; COL' lines in entry text. The added
    text would usually be for a new column annotation.
 */
@@ -739,7 +756,7 @@ int ReadEntryLines(FILE *fp, Entry *entry, int num)
       free(entry->line[ptr]);
     free(entry->line);
   }
-    
+
   /* Read sequence */
 
   entry->line = (char **)malloc(num * sizeof(char *));
@@ -826,7 +843,7 @@ int CmpLine(Entry *entry1, Entry *entry2, int lineno)
   return StrCmp(entry1->line[lineno-1], entry2->line[lineno-1]);
 }
 
-/* 
+/*
   Removes a line from entry. The linenumbers of all lines are still
   unchanged.
 */
@@ -984,7 +1001,7 @@ int ChgField(Entry *entry, int lineno, int colno, const char *format, ...)
     newwidth = width;
 
   sprintf(tmpfmt, " %%%ds", newwidth-1);
-  
+
   strncpy(s, entry->line[lineno-1], ptr);    /* Copy colno-1 columns */
 
   sprintf(&s[ptr], tmpfmt, t);   /* Insert now col(s) */
@@ -1199,7 +1216,7 @@ int FindPair(Entry *entry, int lineno, int align_bp_col, int alignpos_col,
     return start_line;
 
   pos = __FPPrevLine(entry, &end_line, search_col);
-  
+
   if ((strand == -1 && pos > pair) ||
       (strand != -1 && pair > pos))
     /* pair is after end of entry */
@@ -1214,7 +1231,7 @@ int FindPair(Entry *entry, int lineno, int align_bp_col, int alignpos_col,
 
     line = (start_line + end_line) / 2;
     pos = __FPPrevLine(entry, &line, search_col);
-    
+
     if ((strand == -1 && pos < pair) ||
 	(strand != -1 && pair < pos)) {
       end_line = line;
@@ -1226,7 +1243,7 @@ int FindPair(Entry *entry, int lineno, int align_bp_col, int alignpos_col,
 
     line = (start_line + end_line) / 2;
     pos = __FPNextLine(entry, &line, search_col);
-    
+
     if ((strand == -1 && pos > pair) ||
 	(strand != -1 && pair > pos)) {
       start_line = line;

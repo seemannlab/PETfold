@@ -88,12 +88,15 @@ _Bool max(double x, double y);
 double backtracking(DynEntry ***T, int len, char *db);
 char *include_gap_columns(char *db, int *gap_col, int len, int gapnr, char *newdb);
 int create_ppfile(double **paired, double *single, int *gap_col, int len, int gapnr, char *ppfile);
+double ensemble_diversity(double **paired, int len);
 double ***nussinov_subopt(double **paired_pet, double *single_pet, int len);
 double backtracking_subopt(double ***P, double **paired_pet, double *single_pet, int len, char *pet_subopt_gf);
 int statistical_sampling(unsigned long *sam_prob, int sam_len);
 void change_list_sum_to_max(unsigned long *sam_prob, int start, int end);
 void chomp(char *s);
 void usage();
+
+void InitPartStruc(PartStruc *evocon);
 
 void FreeAln(Aln *align);
 void FreeSeqList(SeqList *seqlist);
