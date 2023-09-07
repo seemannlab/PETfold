@@ -1238,7 +1238,8 @@ double backtracking_subopt(double ***P, double **paired_pet, double *single_pet,
 	int i, j, k, offset, sample;
 	double score;
 	int CONST = 1000000;
-
+	struct tagSCFG scfgProbs;
+	
 	s_len = r_len = d_len = ij_len = sam_len = 0;
 	struc[s_len++] = 'S';
 	struc[len] = '\0';

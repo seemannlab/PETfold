@@ -57,7 +57,7 @@ struct tagDynEntry {
 typedef struct tagDynEntry* DynEntry;
 
 /* stochastic context-free grammar (scfg) rule probabilities taken from Knudsen et al. (2003) */
-struct tagSCFG {
+typedef struct tagSCFG {
 	double S_LS;   /* rule S->LS */
 	double S_L;    /* rule S->L */
 	double F_dFd;  /* rule F->dFd*/
