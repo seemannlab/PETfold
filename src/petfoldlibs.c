@@ -416,7 +416,7 @@ PartStruc *mod_setstruct(char *setstruc, int *gap_col, int len, int gapnr)
 			if( setstruc[gap_col[offset]] != '.')
 			{
 				fprintf(stderr, "Error <setstruc>: "
-						"Position %i must be unpaired due to an alignment gap.\n", gap_col[offset]);
+						"Position %i must be unpaired due to an alignment gap.\n", gap_col[offset]+1);
 				exit(1);
 			}
 			offset++;
@@ -1239,7 +1239,7 @@ double backtracking_subopt(double ***P, double **paired_pet, double *single_pet,
 	double score;
 	int CONST = 1000000;
 	struct tagSCFG scfgProbs;
-	
+
 	s_len = r_len = d_len = ij_len = sam_len = 0;
 	struc[s_len++] = 'S';
 	struc[len] = '\0';
