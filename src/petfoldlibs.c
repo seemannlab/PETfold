@@ -1660,7 +1660,7 @@ void chomp(char *s)
  */
 void usage()
 {
-	printf("PETfold v2.1\n"
+	printf("PETfold v2.2\n"
 	 "============\n"
 	 "by Stefan E Seemann (seemann@rth.dk)\n"
 	 "Reference: Seemann et al. Nucleic Acids Res. 36(20):6355-62, 2008\n"
