@@ -1,3 +1,11 @@
+2023-09-14: PETfold v2.1 -> PETfold v2.2
+ * Fix few memory leaks
+ * Fix option --settree: ML tree is no longer calculated if tree is given; labels starting with digits are now allowed
+ * Return length-normalized ensemble diversity: ( \sum{i,j>i+3} p_{i,j} * (1 - p_{i,j}) ) / ((gapfree-length-3)*(gapfree-length-4)/2)
+ * update typedef struct definition to make compatible with gcc (Debian 10.2.1-6) 10.2.1 20210110
+ * Fix access of unallocated memory during parsing of some input trees
+
+
 2017-09-13: PETfold v2.0 -> PETfold v2.1; PETcofold v3.2 -> PETcofold v3.3
  * Change Makefile such that ViennaRNA Package CFLAGS and LDFLAGS are retrieved
    from pkg-config instead of hard coding them (thank Ronny L)
