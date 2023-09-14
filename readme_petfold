@@ -1,4 +1,4 @@
-PETfold v2.0
+PETfold v2.2
 ============
 by Stefan E Seemann:
 seemann@rth.dk
@@ -94,7 +94,7 @@ is ignored in the calculation (marked as "-" in the output).
  
 Here the usage:
 
-PETfold v2.0
+PETfold v2.2
 ============
 by Stefan E Seemann (seemann@rth.dk)
 Reference: Seemann et al. Nucleic Acids Res. 36(20):6355-62, 2008
@@ -129,7 +129,7 @@ PETfold -f <file> -o 10000 | grep Subopt | sort -k 4 -ur | awk '{print $3,$4}' |
 
 4) Example
 ----------
-(using ViennaRNA-2.0.7)
+(using ViennaRNA-2.5.0)
 
 $ cd <PATH>/PETfold
 
@@ -137,25 +137,29 @@ $ bin/PETfold -f example/example.fasta
 Pfold RNA structure:	(((((((...((...--.))..(((((((...)))))))....((((.....---.))))))))))).
 Constraints:		(((((((........--......(((((.....))))).....((((.....---.))))))))))).
 PETfold RNA structure:	(((((((..(((...--.))).(((((((...)))))))....(((((....---)))))))))))).
-Score_{model,structure}{tree,alignment} = 0.730445
+Score_{model,structure}{tree,alignment} = 0.731382
+Length-normalized ensemble diversity = 0.001243
 
 $ bin/PETfold -f example/example.fasta -s '......................(((((((..............(((((.......)))))))))))).'
 Pfold RNA structure:	(((((((...((...--.))..(((((((...)))))))....((((.....---.))))))))))).
 Constraints:		(((((((........--......(((((.....))))).....((((.....---.))))))))))).
 PETfold RNA structure:	...............--.....(((((((..............(((((....---)))))))))))).
-Score_{model,structure}{tree,alignment} = 0.278563
+Score_{model,structure}{tree,alignment} = 0.278173
+Length-normalized ensemble diversity = 0.001243
 
 $ bin/PETfold -f example/example.fasta -t '(gca_bovine,gca_chicken,(gca_mouse,gca_rat))'
 Pfold RNA structure:	(((((((...((...--.))..(((((((...)))))))....((((.....---.))))))))))).
 Constraints:		(((((((........--......(((((.....))))).....((((.....---.))))))))))).
 PETfold RNA structure:	(((((((..(((...--.))).(((((((...)))))))....(((((....---)))))))))))).
-Score_{model,structure}{tree,alignment} = 0.730473
+Score_{model,structure}{tree,alignment} = 0.731410
+Length-normalized ensemble diversity = 0.001243
 
 $ bin/PETfold -f example/example.fasta -t '(gca_bovine:0.4,gca_chicken:0.3,(gca_mouse:0.2,gca_rat:0.1):0.5)'
 Pfold RNA structure:	(((((((...((...--.))..(((((((...)))))))....((((.....---.))))))))))).
 Constraints:		(((((((........--......(((((.....))))).....((((.....---.))))))))))).
 PETfold RNA structure:	(((((((..(((...--.))).(((((((...)))))))....(((((....---)))))))))))).
-Score_{model,structure}{tree,alignment} = 0.741264
+Score_{model,structure}{tree,alignment} = 0.742202
+Length-normalized ensemble diversity = 0.001150
 
 $ bin/PETfold -f example/example.fasta -o 10000 | grep Subopt | sort | uniq -c | sort -k 5 | tac | head -5
 1 Suboptimal structure:   (((((((((.....)--...(((((((((...)))))))))...((((....---)))))))))))).	0.635988
