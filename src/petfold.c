@@ -178,18 +178,9 @@ int main(int argc, char **argv) {
 
 	/* open tree file in Newick format */
 	char *tree = (char *) malloc(BUFFERSIZE * sizeof(char));
-	//char *tree = "";
 	if (strlen(settree)) {
 		tree = read_file(settree);
-		//strcpy(tree, settree);
-		//tree = strdup(tmp);
-		//free(tmp);
-		//tree = (char *) realloc(tree, strlen(tree) + 1 * sizeof(char));
 	}
-//	else {
-//		tree = (char *) malloc(BUFFERSIZE * sizeof(char));
-//		*tree = '\n';
-//	}
 
 	/* open structure file in dot-bracket format */
 	if (strlen(setstruc))
@@ -202,6 +193,8 @@ int main(int argc, char **argv) {
 		/* calculate phylogenetic tree and structure reliabilities in evolutionary model -> Pfold */
 		pfold_struc = get_prob_tree(align_gf, paired_tree, single_tree, tree);
 	}
+	//tree = (char *) realloc(tree, strlen(tree) + 1 * sizeof(char));
+	free(tree);
 	//for(i=0;i<align_gf->len;i++){fprintf(stderr,"%i ",pfold_struc[i]);};fprintf(stderr,"\n");
 	//for (i=0; i<align_gf->len; i++) printf("%11.9f ", single_tree[i]); printf("\n");
 	//int j; for (i=1; i<=align_gf->len; i++) { for (j=1; j<=align_gf->len; j++) printf("%2d %2d %16.8e\n", i,j,paired_tree[i-1][j-1]); }
@@ -317,7 +310,6 @@ int main(int argc, char **argv) {
 		free(P);
 	}
 
-	//free(tree);
 	free(pet_db_gf);
 	free(pet_db);
 

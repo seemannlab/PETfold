@@ -1,4 +1,4 @@
-PETcofold v3.2
+PETcofold v3.4
 ==============
 by Stefan E Seemann:
 seemann@rth.dk
@@ -113,7 +113,7 @@ the output).
 
 Here the usage:
 
-PETcofold v3.2
+PETcofold v3.4
 ==============
 by Stefan E Seemann (seemann@rth.dk)
 Reference: Seemann, Richter et al. Algorithms Mol Biol. 5:22, 2010
@@ -153,27 +153,27 @@ export PETFOLDBIN=<PATH>
 
 4) Example
 ----------
-(using ViennaRNA-2.0.7)
+(using ViennaRNA2/2.6.3)
 
-$ cd <PATH>/PETfold
+$ cd <PATH>/PETfold/bin
 
-$ bin/PETcofold -f example/example1.fasta -f example/example2.fasta
+$ ./PETcofold -f ../example/example1.fasta -f ../example/example2.fasta
 PETfold Alignment 1:
-Delta = 0.90; thermodynamic partial structure probability = 0.66029; evolutionary partial structure probability = 0.94125
+Delta = 0.90; thermodynamic partial structure probability = 0.70144; evolutionary partial structure probability = 0.94125
 Partial Structure 1:	.((((..........--..............))))..
 PETfold Alignment 2:
-Delta = 0.90; thermodynamic partial structure probability = 0.94273; evolutionary partial structure probability = 0.98038
+Delta = 0.90; thermodynamic partial structure probability = 0.95835; evolutionary partial structure probability = 0.98038
 Partial Structure 2:	..((((((..............---)))))).
 PETfold RNA structure:		((((((....((...--.))..........)))))). ..((((((..............---)))))).
 PETcofold RNA structure:	.{{{{....(((...--.))).[[[[[[[[.}}}}..&..{{{{{{.]].]]]]]]....---}}}}}}.
-Score_{model,structure}{tree,alignment} = 0.577586
+Score_{model,structure}{tree,alignment} = 0.583876
 
-$ bin/PETcofold -f example/example1.fasta -f example/example2.fasta --war
+$ ./PETcofold -f ../example/example1.fasta -f ../example/example2.fasta --war
 PETfold Alignment 1:
-Delta = 0.90; thermodynamic partial structure probability = 0.66029; evolutionary partial structure probability = 0.94125
+Delta = 0.90; thermodynamic partial structure probability = 0.70144; evolutionary partial structure probability = 0.94125
 Partial Structure 1:	.((((..........--..............))))..
 PETfold Alignment 2:
-Delta = 0.90; thermodynamic partial structure probability = 0.94273; evolutionary partial structure probability = 0.98038
+Delta = 0.90; thermodynamic partial structure probability = 0.95835; evolutionary partial structure probability = 0.98038
 Partial Structure 2:	..((((((..............---)))))).
 >gca_bovine
 AGCCCUGUGGUGAAUUUACACGUUGAAUUGGGGGCUU&GAGGCCGGUCAAAUUCAGAUCAAU-CCGGCCA
@@ -186,29 +186,29 @@ AGCCUUAAGGUGAUU-AUCAUGUCGAAUUGAGGGCUU&GGGGUUGGGCAAACUCGAAAAUCUACCAACUA
 >structure
 .{{{{....(((...--.))).[[[[[[[[.}}}}..&..{{{{{{.]].]]]]]]....---}}}}}}.
 
-$ bin/PETcofold -f example/example1.fasta -f example/example2.fasta --extstem
+$ ./PETcofold -f ../example/example1.fasta -f ../example/example2.fasta --extstem
 PETfold Alignment 1:
-Delta = 0.90; thermodynamic partial structure probability = 0.58189; evolutionary partial structure probability = 0.44087
+Delta = 0.90; thermodynamic partial structure probability = 0.61793; evolutionary partial structure probability = 0.44087
 Partial Structure 1:	((((((.........--.............)))))).
 PETfold Alignment 2:
-Delta = 0.90; thermodynamic partial structure probability = 0.94273; evolutionary partial structure probability = 0.98038
+Delta = 0.90; thermodynamic partial structure probability = 0.95835; evolutionary partial structure probability = 0.98038
 Partial Structure 2:	..((((((..............---)))))).
 PETfold RNA structure:		((((((....((...--.))..........)))))). ..((((((..............---)))))).
-PETcofold RNA structure:	{{{{{{...(((...--.))).[[[[[[[[}}}}}}.&..{{{{{{.]].]]]]]]....---}}}}}}.
-Score_{model,structure}{tree,alignment} = 0.496890
+PETcofold RNA structure:	{{{{{{...(((...--.))).[[[[[[[[}}}}}}.&..{{{{{{.].]]]]]]]....---}}}}}}.
+Score_{model,structure}{tree,alignment} = 0.506458
 
-$ bin/PETcofold -f example/example1.fasta -f example/example2.fasta -t '(gca_bovine:0.9,gca_chicken:0.01,(gca_mouse:0.01,gca_rat:0.1):0.9)'
+$ ./PETcofold -f ../example/example1.fasta -f ../example/example2.fasta -t '(gca_bovine:0.9,gca_chicken:0.01,(gca_mouse:0.01,gca_rat:0.1):0.9)'
 PETfold Alignment 1:
-Delta = 0.90; thermodynamic partial structure probability = 0.66029; evolutionary partial structure probability = 0.98129
+Delta = 0.90; thermodynamic partial structure probability = 0.70144; evolutionary partial structure probability = 0.98129
 Partial Structure 1:	.((((..........--..............))))..
 PETfold Alignment 2:
-Delta = 0.90; thermodynamic partial structure probability = 0.94273; evolutionary partial structure probability = 0.98859
+Delta = 0.90; thermodynamic partial structure probability = 0.95835; evolutionary partial structure probability = 0.98859
 Partial Structure 2:	..((((((..............---)))))).
 PETfold RNA structure:		((((((...(((...--.))).........)))))). ..((((((..............---)))))).
 PETcofold RNA structure:	.{{{{....(((...--.))).[[[[[[[[.}}}}..&..{{{{{{.]].]]]]]]....---}}}}}}.
-Score_{model,structure}{tree,alignment} = 0.603243
+Score_{model,structure}{tree,alignment} = 0.609533
 
-$ bin/PETcofold -f example/example1.fasta -f example/example2.fasta -t '(gca_bovine,gca_chicken,(gca_mouse,gca_rat))'
+$ ./PETcofold -f ../example/example1.fasta -f ../example/example2.fasta -t '(gca_bovine,gca_chicken,(gca_mouse,gca_rat))'
 PETfold Alignment 1:
 Delta = 0.90; thermodynamic partial structure probability = 0.66029; evolutionary partial structure probability = 0.94008
 Partial Structure 1:	.((((..........--..............))))..
@@ -219,17 +219,16 @@ PETfold RNA structure:		((((((....((...--.))..........)))))). ..((((((..........
 PETcofold RNA structure:	.{{{{....(((...--.))).[[[[[[[[.}}}}..&..{{{{{{.]].]]]]]]....---}}}}}}.
 Score_{model,structure}{tree,alignment} = 0.577531
 
-$ bin/PETcofold -f example/example1.fasta -f example/example2.fasta -s "((((((...((([[[..[))).........)))))).&..((((((.....]]]].....---))))))."
+$ ./PETcofold -f ../example/example1.fasta -f ../example/example2.fasta -s "((((((...((([[[..[))).........)))))).&..((((((.....]]]].....---))))))."
 PETfold Alignment 1:
-Delta = 0.00; thermodynamic partial structure probability = 0.01669; evolutionary partial structure probability = 0.07884
+Delta = 0.00; thermodynamic partial structure probability = 0.01776; evolutionary partial structure probability = 0.07884
 Partial Structure 1:	((((((...(((...--.))).........)))))).
 PETfold Alignment 2:
-Delta = 0.00; thermodynamic partial structure probability = 0.94273; evolutionary partial structure probability = 0.98038
+Delta = 0.00; thermodynamic partial structure probability = 0.95835; evolutionary partial structure probability = 0.98038
 Partial Structure 2:	..((((((..............---)))))).
 PETfold RNA structure:		((((((...(((...--.))).........)))))). ..((((((..............---)))))).
 PETcofold RNA structure:	{{{{{{...{{{[[[--[}}}.........}}}}}}.&..{{{{{{.....]]]].....---}}}}}}.
-Score_{model,structure}{tree,alignment} = 0.213759
-
+Score_{model,structure}{tree,alignment} = 0.215713
 
 
 5) References

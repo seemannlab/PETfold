@@ -114,7 +114,8 @@ int *__get_pfold(Aln *align_gf, double **paired_tree, double *single_tree, PartS
 		/* END adapted from Pfold:findphyl.c */
 		else
 		{
-			char* tmptree = (char *)malloc((strlen(settree)+3) * sizeof(char));
+			char *tmptree = (char *) malloc(BUFFERSIZE * sizeof(char));
+			//char* tmptree = (char *)malloc((strlen(settree)+3) * sizeof(char));
 			strcpy(tmptree,settree);
 			strcat(tmptree, ":0");
 			tmpphyl = ReadPhyl(tmptree, 1);

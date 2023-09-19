@@ -224,7 +224,7 @@ int main(int argc, char **argv)
 	if (strlen(settree)) {
 		settree = read_file(settree);
 		strcpy(tree, settree);
-		tree = (char *)realloc(tree, strlen(tree)+3 * sizeof(char *));
+		//tree = (char *)realloc(tree, strlen(tree)+3 * sizeof(char *));
 	}
 	/* open structure file in dot-bracket format */
 	if (strlen(setstruc)) {
@@ -371,8 +371,8 @@ int main(int argc, char **argv)
 
 	int *temp_struc = get_duplex_prob_tree(subalign_gf1, subalign_gf2, duplex_paired_tree, duplex_single_tree, ss_partial1, ss_partial2, tree);
 	free(temp_struc);
-	if ( !strlen(settree) || strstr(settree, ":") == NULL )
-		tree = (char *)realloc(tree, strlen(tree)+1 * sizeof(char *));
+	//if ( !strlen(settree) || strstr(settree, ":") == NULL )
+	tree = (char *)realloc(tree, strlen(tree)+1 * sizeof(char *));
 
 	//int *duplex_pfold_struc = get_duplex_prob_tree(subalign_gf1, subalign_gf2, duplex_paired_tree, duplex_single_tree, ss_partial1, ss_partial2, tree);
 	//for (i=0; i<subalign_gf1->len+subalign_gf2->len; i++) printf("%i ", duplex_pfold_struc[i]); printf("\n");
