@@ -177,9 +177,10 @@ int main(int argc, char **argv) {
 	single_tree = (double *) malloc((align_gf->len) * sizeof(double));
 
 	/* open tree file in Newick format */
-	char *tree = (char *) malloc(BUFFERSIZE * sizeof(char));
+	char *tree = (char *)calloc(BUFFERSIZE, sizeof(char *));
 	if (strlen(settree)) {
-		tree = read_file(settree);
+		settree = read_file(settree);
+		strcpy(tree, settree);
 	}
 
 	/* open structure file in dot-bracket format */
@@ -194,7 +195,7 @@ int main(int argc, char **argv) {
 		pfold_struc = get_prob_tree(align_gf, paired_tree, single_tree, tree);
 	}
 	//tree = (char *) realloc(tree, strlen(tree) + 1 * sizeof(char));
-	free(tree);
+
 	//for(i=0;i<align_gf->len;i++){fprintf(stderr,"%i ",pfold_struc[i]);};fprintf(stderr,"\n");
 	//for (i=0; i<align_gf->len; i++) printf("%11.9f ", single_tree[i]); printf("\n");
 	//int j; for (i=1; i<=align_gf->len; i++) { for (j=1; j<=align_gf->len; j++) printf("%2d %2d %16.8e\n", i,j,paired_tree[i-1][j-1]); }
@@ -319,6 +320,7 @@ int main(int argc, char **argv) {
 	if (setevo_flag)
 		FreePartStruc(evocon);
 
+  free(tree);
 	free(evocon_db);
 
 	FreeDynEntry(T, align_gf->len);
