@@ -201,7 +201,7 @@ PartStruc *get_probable_partial_struc(Aln *align, double **paired_pet, PartStruc
 	double thermoensemble = get_ensemble_energy(align);
 
 	/* ensemble probability in evolutionary model */
-    double evolensemble = get_ensemble_evolprob(align, tree);
+	double evolensemble = get_ensemble_evolprob(align, tree);
 
 	while( partialprob[0] <= partprob && partialprob[1] <= partprob && mypetcon < 1 ) {
 
@@ -714,7 +714,7 @@ char *substitute_char(char *string, char a, char b, int len)
  */
 void usage_petcofold()
 {
-	printf("PETcofold v3.3\n"
+	printf("PETcofold v3.4\n"
 	 "==============\n"
 	 "by Stefan E Seemann (seemann@rth.dk)\n"
 	 "Reference: Seemann, Richter et al. Algorithms Mol Biol. 5:22, 2010\n"

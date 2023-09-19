@@ -109,7 +109,7 @@ int *__get_pfold(Aln *align_gf, double **paired_tree, double *single_tree, PartS
 		    phyl = ReadColPhyl(entry);
 
 				/* free memory */
-				//FreeDist(dist);
+				FreeDist(dist);
 		}
 		/* END adapted from Pfold:findphyl.c */
 		else
@@ -123,7 +123,7 @@ int *__get_pfold(Aln *align_gf, double **paired_tree, double *single_tree, PartS
 		  phyl = ReadColPhyl(entry);
 		}
 		/* free memory */
-		//FreePhyl(tmpphyl);
+		FreePhyl(tmpphyl);
 
 		if (verbose_flag)
 		{
@@ -134,7 +134,7 @@ int *__get_pfold(Aln *align_gf, double **paired_tree, double *single_tree, PartS
 		/* branch lengths are not given and are estimated by maximum likelihood
 		 * adapted from Pfold:mltree.c
 		 */;
-		if( settree == NULL || ! strcmp("", settree) || strstr(settree, ":") == NULL )
+		if( settree == 0 || ! strcmp("", settree) || strstr(settree, ":") == NULL )
 		{
 			initphyl(phyl->root, grammar, align);
 			collikelhd = (double *)calloc(align->len, sizeof(double));
@@ -152,13 +152,13 @@ int *__get_pfold(Aln *align_gf, double **paired_tree, double *single_tree, PartS
 					fprintf(stderr, " NLL = %f\n", nll);
 			}
 			free(collikelhd);
-			//FixPhyl(phyl);
+			FixPhyl(phyl);
 			UpdatePhylEntry(phyl, entry);
 			phyl = ReadColPhyl(entry);
 
 			/* store tree in Newick format if not given */
 			//Phyl2Char(&settree, phyl);
-			//Phyl2Char(settree, phyl);
+			Phyl2Char(settree, phyl);
 		}
 		/* END adapted from Pfold:mltree.c */
 
@@ -312,7 +312,7 @@ int *__get_pfold(Aln *align_gf, double **paired_tree, double *single_tree, PartS
 	}
 
 	/* free dynamic memory */
-	//FreePhyl(phyl);
+	FreePhyl(phyl);
 	FreePpCyk(ppcyk);
 	FreePairprob(pp);
 
@@ -845,8 +845,8 @@ double __get_evolprob(Aln* align, char *tree, PartStruc *evocon)
 	/* read the sequences */
     alignment = Col2Align(entry_list, (int (*)(char, void *))FindSym,  (void *)grammar);
 
-    /* initialize phylogeny by given tree */
-	char* tmptree = (char *)malloc((strlen(tree)+1) * sizeof(char *));
+  /* initialize phylogeny by given tree */
+	char* tmptree = (char *)malloc((strlen(tree)+3) * sizeof(char *));
 	strcpy(tmptree, tree);
 	strcat(tmptree, ":0");
 	phyl = ReadPhyl(tmptree, 1);

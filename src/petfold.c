@@ -177,8 +177,8 @@ int main(int argc, char **argv) {
 	single_tree = (double *) malloc((align_gf->len) * sizeof(double));
 
 	/* open tree file in Newick format */
-	//char *tree = (char *) malloc(BUFFERSIZE * sizeof(char));
-	char *tree = "";
+	char *tree = (char *) malloc(BUFFERSIZE * sizeof(char));
+	//char *tree = "";
 	if (strlen(settree)) {
 		tree = read_file(settree);
 		//strcpy(tree, settree);

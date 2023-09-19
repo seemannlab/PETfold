@@ -184,6 +184,13 @@ int main(int argc, char **argv)
 			"Intersection of fasta files results in zero common identifiers!\n");
 		exit(1);
 	}
+	if (subalign_gf1->nr < 3) {
+		printf("WARNING: PETcofold is cancelled as your input consists of ONLY %i sequence(s) with common identifiers.\n" ,
+			subalign_gf1->nr);
+		printf("Please provide two alignments with at least 3 common identifiers.\n");
+		exit(1);
+	}
+
 	Aln *subalign_gf2 = get_subalignment(align_gf2, cindex+align_gf1->nr);
 	free(cindex);
 	FreeAln(align_gf1);
@@ -217,7 +224,7 @@ int main(int argc, char **argv)
 	if (strlen(settree)) {
 		settree = read_file(settree);
 		strcpy(tree, settree);
-		//tree = (char *)realloc(tree, strlen(tree)+1 * sizeof(char *));
+		tree = (char *)realloc(tree, strlen(tree)+3 * sizeof(char *));
 	}
 	/* open structure file in dot-bracket format */
 	if (strlen(setstruc)) {
