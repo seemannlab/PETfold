@@ -1,4 +1,4 @@
-2023-09-14: PETfold v2.1 -> PETfold v2.2; PETcofold v3.3 -> PETcofold v3.4
+2023-09-19: PETfold v2.1 -> PETfold v2.2; PETcofold v3.3 -> PETcofold v3.4
  * Fix few memory leaks
  * Fix option --settree: ML tree is no longer calculated if tree is given; labels starting with digits are now allowed
  * Return length-normalized ensemble diversity: ( \sum{i,j>i+3} p_{i,j} * (1 - p_{i,j}) ) / ((gapfree-length-3)*(gapfree-length-4)/2)

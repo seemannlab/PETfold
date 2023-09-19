@@ -210,14 +210,14 @@ Score_{model,structure}{tree,alignment} = 0.609533
 
 $ ./PETcofold -f ../example/example1.fasta -f ../example/example2.fasta -t '(gca_bovine,gca_chicken,(gca_mouse,gca_rat))'
 PETfold Alignment 1:
-Delta = 0.90; thermodynamic partial structure probability = 0.66029; evolutionary partial structure probability = 0.94008
+Delta = 0.90; thermodynamic partial structure probability = 0.70144; evolutionary partial structure probability = 0.94008
 Partial Structure 1:	.((((..........--..............))))..
 PETfold Alignment 2:
-Delta = 0.90; thermodynamic partial structure probability = 0.94273; evolutionary partial structure probability = 0.98043
+Delta = 0.90; thermodynamic partial structure probability = 0.95835; evolutionary partial structure probability = 0.98043
 Partial Structure 2:	..((((((..............---)))))).
 PETfold RNA structure:		((((((....((...--.))..........)))))). ..((((((..............---)))))).
 PETcofold RNA structure:	.{{{{....(((...--.))).[[[[[[[[.}}}}..&..{{{{{{.]].]]]]]]....---}}}}}}.
-Score_{model,structure}{tree,alignment} = 0.577531
+Score_{model,structure}{tree,alignment} = 0.583821
 
 $ ./PETcofold -f ../example/example1.fasta -f ../example/example2.fasta -s "((((((...((([[[..[))).........)))))).&..((((((.....]]]].....---))))))."
 PETfold Alignment 1:
