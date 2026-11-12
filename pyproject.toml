@@ -1,0 +1,36 @@
+[build-system]
+requires = ["scikit-build-core>=0.8", "pybind11>=2.11"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "petfold"
+version = "3.0.0"
+description = "PETfold / PETcofold: evolutionary and thermodynamic folding of RNA alignments (C++ edition)"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = ["numpy>=1.21"]
+authors = [{ name = "Stefan E. Seemann", email = "seemann@rth.dk" }]
+classifiers = [
+  "Programming Language :: C++",
+  "Programming Language :: Python :: 3",
+  "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+
+[project.optional-dependencies]
+test = ["pytest"]
+
+[project.scripts]
+PETfold = "petfold._cli:petfold"
+PETcofold = "petfold._cli:petcofold"
+drawdot = "petfold._cli:drawdot"
+drawphyl = "petfold._cli:drawphyl"
+
+[tool.scikit-build]
+cmake.version = ">=3.18"
+wheel.packages = ["python/petfold"]
+build.verbose = false
+sdist.exclude = ["build*", "dist", ".pytest_cache", "**/__pycache__"]
+
+[tool.scikit-build.cmake.define]
+PETFOLD_BUILD_PYTHON = "ON"
+PETFOLD_BUILD_TOOLS = "OFF"

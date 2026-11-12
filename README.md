@@ -1,194 +1,81 @@
-# PETfold v2.2
-
-## Outline:
-
-	1) Introduction
-	2) Installation
-	3) Usage
-	4) Example
-	5) References
-	6) Contact
-
-## 1) Introduction
-
-PETfold performs Probabilistic Evolutionary and Thermodynamic folding of a
-multiple alignment of RNA sequences.
-
-PETfold is a computational method that predicts the conserved
-secondary structure of RNA sequences with maximum expected accuracy
-(MEA). PETfold is the first tool which integrates the duality of
-energy-based and evolution-based approaches for folding of multiple
-aligned RNA sequences into a single optimization problem.
-
-PETfold is an extended version of Pfold (see [1]) which identifies
-basepairs that are most conserved and energetically most favorable
-using a maximum expected accuracy scoring. The probabilities of single
-stranded and base paired positions in the thermodynamic structure
-ensemble are calculated by the Vienna RNA package (see [2]).
-
-PETfold was tested on a set of 46 well curated Rfam families and its
-performance compared to that of Pfold and RNAalifold. On average,
-PETfold performs best when comparing the predicted structures to that
-of Rfam. We obtained the following averages of Matthews correlation
-coefficient: PETfold: 0.85, Pfold: 0.71, RNAalifold: 0.79.
-
-## 2) Installation
-
-PETfold needs the Vienna RNA Package (see [2]) installed on your
-computer. You have to edit the variables 'HPATH' and 'LPATH' at the
-top of the 'Makefile' in the 'src' subfolder by setting them to the
-location of the Vienna RNA Package header files and the libRNA.a file.
-The source code of Pfold is part of the PETfold program (thanks to
-Bjarne Knudsen) and is compiled together with it.
-
-``$ cd src``  
-``$ make clean``  
-``$ make``
-
-If you don't start PETfold directly from the bin folder then you have
-to set the environment variable PETFOLDBIN to the path of Pfold
-grammar files scfg.rate and article.grm:  
-``$ export PETFOLDBIN='<PATH>/bin'``
+# PETfold / PETcofold — C++ edition with Python bindings
 
 
-## 3) Usage
+## Installation
 
-PETfold reads an RNA sequence alignment in fasta format (-f or --fasta).
-You can run PETfold with only one sequence, however, at least three
-sequences are recommended to exploit the strength of the evolutionary
-model.
+Both routes need the **ViennaRNA C library** 2.x (tested with 2.6.3) with its `RNAlib2.pc` pkg-config file:
 
-The standard output is the consensus structure calculated by Pfold,
-evolutionary constraints based on the reliabilities calculated by
-Pfold and the consensus structure with its (normalized) score
-calculated by PETfold. An alternative output is provided in fasta
-format (--war). A long output including the alignment without gaps and
-the evolutionary tree is provided by the parameter --verbose.
+```bash
+conda install -c conda-forge -c bioconda viennarna     # or build ViennaRNA from source
+export PKG_CONFIG_PATH=$CONDA_PREFIX/lib/pkgconfig      # if pkg-config does not find RNAlib2
+```
 
-The single-stranded and basepair probabilities of the PET model can be
-written in a pp-file (-r or --ppfile) that can be drawn as dotplot by
-'drawdot' (part of the Pfold package). If the secondary structure is
-already known then its PETfold score and base pair reliabilities can
-be calculated too (-s or --setstruc). By default, a phylogenetic tree
-is calculated from pairwise distances using the neighbour joining (NJ)
-algorithm. However, the user can specify his own tree (-t or
---settree). Alternative structures can be calculated by a structure
-sampling algorithm (-o or --suboptimal). A large number of suboptimals
-should be generated and afterwards parsed and filtered by the user.
+### Python package (includes the command-line tools)
 
-PETfold is optimized by several parameters. The advanced user has the
-possibility to change them: --setevocon_bp, --setevocon_ss,
---setalpha, --setbeta, --setgap. The latter decides how many gaps are
-allowed in one alignment column (default 0.25), otherwise the column
-is ignored in the calculation (marked as "-" in the output).
+```bash
+pip install .                 # from this directory
+```
 
-Here the usage:
+This installs the `petfold` Python module and the commands `PETfold`, `PETcofold`, `drawdot` and `drawphyl`. The Pfold grammar files are bundled; `PETFOLDBIN` is no longer needed.
 
-``PETfold v2.2``  
-``============``  
-``by Stefan E Seemann (seemann@rth.dk)``  
-``Reference: Seemann et al. Nucleic Acids Res. 36(20):6355-62, 2008``  
-``Web service: http://rth.dk/resources/petfold``  
+### Command-line tools only (CMake)
 
-``Usage:``  
-``  PETfold -f <file> [ options ] [ parameter settings ]``  
+```bash
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+cmake --install build --prefix /usr/local     # optional; installs grammar files to share/petfold
+```
 
-``  -f --fasta <file>          ... alignment in fasta format``  
-``Options:``  
-``  -s --setstruc <struc|file> ... calculates score for given structure in dot-bracket notation``  
-``  -t --settree <tree|file>   ... calculates score for given tree in Newick tree format``  
-``  --war                      ... fasta format output``  
-``  -r --ppfile <file>         ... writes PET reliabilities in file``  
-``  -o --suboptimal <nr>       ... number of alternative structures found by sampling``  
-``  --ppfold                   ... reads ppfold calculated reliabilities from STDIN``  
-``  --verbose                  ... writes long output``  
-``  --help                     ... this output``  
-``Parameter settings:``  
-``  -p --setevocon_bp <reliab> ... reliab.threshold for conserved base pairs (default: 0.9)``  
-``  -u --setevocon_ss <reliab> ... reliab.threshold for conserved unpaired bases (default: 1)``  
-``  -a --setalpha <nr>         ... weighting factor for unpaired reliabilities (default: 0.2)``  
-``  -b --setbeta <nr>          ... weighting factor for thermodynamic overlap (default: 1)``  
-``  -g --setgap <nr>           ... max. percent of gaps in alignment column (default:0.25)``  
+Options: `-DCMAKE_CXX_STANDARD=23`, `-DPETFOLD_SANITIZE=ON` (AddressSanitizer + UBSan), `-DPETFOLD_BUILD_PYTHON=ON`.
 
-``You may set the environment variable PETFOLDBIN to path of files scfg.rate and article.grm:``  
-``export PETFOLDBIN=<PATH>``  
+Grammar files are searched in this order: `--grammar-dir`, `$PETFOLDBIN`, the current directory (as in 2.2), the installed data directory. The build directory contains a copy.
 
-``Parse sampling of suboptimal structures:``  
-``PETfold -f <file> -o 10000 | grep Subopt | sort -k 4 -ur | awk '{print $3,$4}' | less``  
+## Command line
 
+Options and output are the same as in PETfold 2.2 and PETcofold 3.4 (see `PETfold --help`, `PETcofold --help`):
 
-## 4) Example
+```bash
+PETfold  -f example/example.fasta
+PETcofold -f example/example1.fasta -f example/example2.fasta
+```
 
-(using ViennaRNA-2.6.3)  
+New options: `--seed` (reproducible `--suboptimal` sampling), `--grammar-dir`, `--version`, and for PETcofold `--legacy-cutpoint` (reproduces the 3.4 cut point handling, for comparisons). `--noevo` and `--nothermo` existed before but were undocumented.
 
-``$ cd <PATH>/PETfold/bin``  
+## Python
 
-``$ ./PETfold -f ../example/example.fasta``  
-``Pfold RNA structure:	(((((((...((...--.))..(((((((...)))))))....((((.....---.))))))))))).``  
-``Constraints:		(((((((........--......(((((.....))))).....((((.....---.))))))))))).``  
-``PETfold RNA structure:	(((((((..(((...--.))).(((((((...)))))))....(((((....---)))))))))))).``  
-``Score_{model,structure}{tree,alignment} = 0.731382``  
-``Length-normalized ensemble diversity = 0.001243``  
+```python
+import petfold
 
-``$ ./PETfold -f ../example/example.fasta -s '......................(((((((..............(((((.......)))))))))))).'``  
-``Pfold RNA structure:	(((((((...((...--.))..(((((((...)))))))....((((.....---.))))))))))).``  
-``Constraints:		(((((((........--......(((((.....))))).....((((.....---.))))))))))).``  
-``PETfold RNA structure:	...............--.....(((((((..............(((((....---)))))))))))).``  
-``Score_{model,structure}{tree,alignment} = 0.278173``  
-``Length-normalized ensemble diversity = 0.001243``  
+r = petfold.fold("example/example.fasta")          # path, {id: seq} or [(id, seq), ...]
+print(r.structure, r.score)
+r.paired_pet        # (L x L) numpy array, PET base pair reliabilities (alignment columns)
+r.single_pet        # (L,) unpaired reliabilities
+r.paired_evo, r.paired_thermo     # the two model components
+r.base_pairs        # [(i, j), ...] of the predicted structure
+r.pair_table(0.5)   # [(i, j, reliability), ...]
 
-``$ ./PETfold -f ../example/example.fasta -t '(gca_bovine,gca_chicken,(gca_mouse,gca_rat))'``  
-``Pfold RNA structure:	(((((((...((...--.))..(((((((...)))))))....((((.....---.))))))))))).``  
-``Constraints:		(((((((........--......(((((.....))))).....((((.....---.))))))))))).``  
-``PETfold RNA structure:	(((((((..(((...--.))).(((((((...)))))))....(((((....---)))))))))))).``  
-``Score_{model,structure}{tree,alignment} = 0.731410``  
-``Length-normalized ensemble diversity = 0.001243``  
+r = petfold.fold(aln, tree="(a,b,(c,d))", structure="((((....))))", beta=0.5)
+r = petfold.fold(aln, suboptimal=1000, seed=1)       # r.suboptimals = [(structure, score), ...]
 
-``$ ./PETfold -f ../example/example.fasta -t '(gca_bovine:0.4,gca_chicken:0.3,(gca_mouse:0.2,gca_rat:0.1):0.5)'``  
-``Pfold RNA structure:	(((((((...((...--.))..(((((((...)))))))....((((.....---.))))))))))).``  
-``Constraints:		(((((((........--......(((((.....))))).....((((.....---.))))))))))).``  
-``PETfold RNA structure:	(((((((..(((...--.))).(((((((...)))))))....(((((....---)))))))))))).``  
-``Score_{model,structure}{tree,alignment} = 0.742202``  
-``Length-normalized ensemble diversity = 0.001150``  
+c = petfold.cofold("rna1.fasta", "rna2.fasta", extstem=True)
+print(c.structure)          # '{' '}' partial structures, '(' ')' step-2 pairs, '[' ']' interactions
+c.paired_pet                # (L1+L2) x (L1+L2) duplex reliabilities
+```
 
-``$ ./PETfold -f ../example/example.fasta -o 10000 | grep Subopt | sort | uniq -c | sort -k 5 | tac | head -5``  
-``1 Suboptimal structure:   (((((((((.....)--...(((((((((...)))))))))...((((....---)))))))))))).	0.635988``  
-``1 Suboptimal structure:   (((((((........--.(((((((((((...)))))))))))(...)....---.....))))))).	0.528618``  
-``1 Suboptimal structure:   ((((((((.....).--.......)((((...))))((...)).((((....---))))..)))))).	0.524486``  
-``1 Suboptimal structure:   ((((((((((((...--)..(((((((((...)))))))))....)))....---....)))))))).	0.517366``  
-``1 Suboptimal structure:   .((((((..(.....--..)(((((((((...))))))))).....((...)---)....))))))..	0.502615``
+All parameters of the command line are keyword arguments (`gap`, `evocon_bp`, `evocon_ss`, `alpha`, `beta`, `use_evo`, `use_thermo`, and for `cofold` `delta`, `gamma`, `extstem`, `legacy_cutpoint`). Errors raise `petfold.PetfoldError`. Verbose output is returned in `result.log`. The computation releases the GIL, so alignments can be folded in parallel threads.
 
-``$ ./PETfold -f ../example/example.fasta --war``  
-``>gca_bovine``  
-``AGCCCUGUGGUGAAUUUACACGUUGAAUUGCAAAUUCAGAGAAGCAGCUUCAAU-UCUGCCGGGGCUU``  
-``>gca_chicken``  
-``GACUCUGUAGUGAAGU-UCAUAAUGAGUUGCAAACUCGUUGAUGUACACUAA-AGUGUGCCGGGGUCU``  
-``>gca_mouse``  
-``GGUCUUAAGGUGAUA-UUCAUGUCGAAUUGCAAAUUCGAAGGUGUAGAGAAAU-CUCUACUAAGACUU``  
-``>gca_rat``  
-``AGCCUUAAGGUGAUU-AUCAUGUCGAAUUGCAAAUUCGAAGGUGUAGAGAAUCU-UCUACUAAGGCUU``  
-``>structure``  
-``(((((((..(((...--.))).(((((((...)))))))....(((((....---)))))))))))).``  
+Arrays are in alignment coordinates: columns removed because of too many gaps are zero, as in the pp-file written by `-r`.
 
 
-## 5) References
+## Layout
 
-[1] Knudsen, B. and Hein, J. (2003)
-    Pfold: RNA secondary structure prediction using stochastic context-free grammars.
-    *Nucleic Acids Research, 31 (13), 3423-3428*  
-[2] I.L. Hofacker, W. Fontana, P.F. Stadler, S. Bonhoeffer, M. Tacker, P. Schuster (1994)
-    Fast Folding and Comparison of RNA Secondary Structures.
-    *Monatshefte f. Chemie 125: 167-188*
-
-If you find this software useful for your research, please cite the following work:  
-    Seemann SE, Gorodkin J, Backofen, R.  
-    Unifying evolutionary and thermodynamic information for RNA folding of multiple alignments.  
-    *Nucleic Acids Res. 36(20):6355-62, 2008*  
-		doi: 10.1093/nar/gkn544
+| Path | Content |
+|---|---|
+| `src/pfold/` | Pfold engine (B. Knudsen), ported to C++ in namespace `pfold` with scoped memory management |
+| `src/petfold/` | PETfold/PETcofold models, pipelines and command-line front ends (namespace `petfold`) |
+| `src/apps/` | `main()` of the four programs; `drawdot`, `drawphyl` |
+| `python/` | pybind11 module `petfold._core` and the Python package |
+| `data/` | Pfold grammar files `scfg.rate`, `article.grm` |
+| `example/` | test data |
 
 
-## 6) Contact
-
-
-Stefan E Seemann  
-seemann@rth.dk
